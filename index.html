@@ -1,1471 +1,1599 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full select-none">
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <!-- Meta especial para comportamiento de App Nativa en APK/Cordova -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  
-  <!-- Meta dinámico para homogeneizar la barra de estado del celular con la interfaz -->
-  <meta name="theme-color" id="meta-theme-color" content="#f8fafc">
-  
-  <title>Agenda Inteligente PRO</title>
-  
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Chart.js para análisis visual móvil -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  
-  <!-- Tailwind Config para variables móviles -->
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Finanzas Premium</title>
+    <!-- Tailwind CSS para diseño rápido y limpio -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons para iconografía espectacular -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
             theme: {
-              50: 'var(--color-theme-50)',
-              100: 'var(--color-theme-100)',
-              200: 'var(--color-theme-200)',
-              500: 'var(--color-theme-500)',
-              600: 'var(--color-theme-600)',
-              700: 'var(--color-theme-700)',
-              900: 'var(--color-theme-900)',
+                extend: {
+                    borderRadius: {
+                        '3xl': '24px',
+                        '4xl': '32px',
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 30px -5px rgba(0, 0, 0, 0.05)',
+                        'soft-lg': '0 20px 40px -10px rgba(0, 0, 0, 0.07)',
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                    }
+                }
             }
-          }
         }
-      }
-    }
-  </script>
-  <!-- Lucide Icons para la navegación inferior y formularios -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  
-  <style>
-    /* Temas Premium configurados dinámicamente */
-    :root, [data-theme="emerald"] {
-      --color-theme-50: #ecfdf5;
-      --color-theme-100: #d1fae5;
-      --color-theme-200: #a7f3d0;
-      --color-theme-500: #10b981;
-      --color-theme-600: #059669;
-      --color-theme-700: #047857;
-      --color-theme-900: #064e3b;
-    }
-    [data-theme="ocean"] {
-      --color-theme-50: #f0f9ff;
-      --color-theme-100: #e0f2fe;
-      --color-theme-200: #bae6fd;
-      --color-theme-500: #0ea5e9;
-      --color-theme-600: #0284c7;
-      --color-theme-700: #0369a1;
-      --color-theme-900: #0c4a6e;
-    }
-    [data-theme="amethyst"] {
-      --color-theme-50: #faf5ff;
-      --color-theme-100: #f3e8ff;
-      --color-theme-200: #e9d5ff;
-      --color-theme-500: #a855f7;
-      --color-theme-600: #9333ea;
-      --color-theme-700: #7e22ce;
-      --color-theme-900: #581c87;
-    }
-    [data-theme="sunset"] {
-      --color-theme-50: #fff7ed;
-      --color-theme-100: #ffedd5;
-      --color-theme-200: #fed7aa;
-      --color-theme-500: #f97316;
-      --color-theme-600: #ea580c;
-      --color-theme-700: #c2410c;
-      --color-theme-900: #7c2d12;
-    }
-    [data-theme="charcoal"] {
-      --color-theme-50: #f8fafc;
-      --color-theme-100: #f1f5f9;
-      --color-theme-200: #e2e8f0;
-      --color-theme-500: #64748b;
-      --color-theme-600: #475569;
-      --color-theme-700: #334155;
-      --color-theme-900: #0f172a;
-    }
+    </script>
+    <style>
+        * {
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        input, select, textarea {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        /* Ocultar scrollbar */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Animaciones y transiciones de pantalla suaves */
+        .screen-transition {
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease, filter 0.4s ease;
+        }
+        /* Variables de Tema CSS completamente dinámicas */
+        :root {
+            --app-bg: #f3f4f9;
+            --card-bg: #ffffff;
+            --nested-bg: #f8fafc;
+            --text-primary: #11142d;
+            --text-secondary: #808191;
+            --active-card-grad: linear-gradient(135deg, #6366f1, #4f46e5);
+            --active-card-shadow: rgba(99, 102, 241, 0.3);
+        }
 
-    /* Estilos para comportamiento de Aplicación APK Nativa */
-    html, body {
-      background-color: #f8fafc; /* Color de fondo por defecto */
-      height: 100%;
-      width: 100%;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-    }
-    
-    .dark html, .dark body {
-      background-color: #020617; /* Fondo en modo oscuro */
-    }
+        body {
+            background-color: var(--app-bg);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
 
-    body {
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      overscroll-behavior-y: contain; /* Evita recarga por arrastre en navegadores móviles */
-    }
-
-    /* Soporte de pantalla de teléfono inmersiva (Muescas, Notch y barra de botones) */
-    .pt-safe {
-      padding-top: env(safe-area-inset-top, 0px);
-    }
-    .pb-safe {
-      padding-bottom: env(safe-area-inset-bottom, 0px);
-    }
-
-    /* Permitir selección únicamente en entradas de formulario */
-    input, textarea, select {
-      -webkit-user-select: text;
-      user-select: text;
-    }
-
-    /* Ocultar barra de scroll pero mantener funcionalidad de desplazamiento */
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-  </style>
+        /* Utilidades dinámicas */
+        .custom-app-bg { background-color: var(--app-bg); }
+        .custom-card-bg { background-color: var(--card-bg); }
+        .custom-text-primary { color: var(--text-primary); }
+        .custom-text-secondary { color: var(--text-secondary); }
+        
+        .card-slide-active {
+            animation: slideIn 0.3s forwards cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 h-full flex flex-col transition-colors duration-300 overflow-hidden pb-16 pt-safe">
+<body class="flex justify-center items-center min-h-screen custom-app-bg">
 
-  <!-- NOTIFICACIÓN FLOTANTE (ESTILO TOAST MÓVIL) -->
-  <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 transform translate-y-[-180%] transition-transform duration-300 bg-slate-900/95 dark:bg-white/95 text-white dark:text-slate-900 px-5 py-3 rounded-2xl shadow-xl flex items-center gap-2 max-w-[90%] w-max text-xs font-bold backdrop-blur-sm">
-    <i data-lucide="bell" class="w-4 h-4 text-theme-500"></i>
-    <span id="toast-message">¡Operación realizada con éxito!</span>
-  </div>
-
-  <!-- CONTENEDOR DE PANTALLAS (VISTAS) MÓVILES -->
-  <main class="flex-1 overflow-y-auto no-scrollbar relative">
-
-    <!-- PESTAÑA 1: INICIO (DASHBOARD & GRÁFICOS) -->
-    <div id="view-dashboard" class="view-panel p-4 space-y-4">
-      
-      <!-- Balance General Dinámico -->
-      <div id="stat-balance-card" class="p-5 rounded-2xl flex items-center justify-between transition-all duration-300">
-        <div class="space-y-1">
-          <p id="stat-balance-sub-label" class="text-[10px] font-black uppercase tracking-wider text-white/90">Mi Balance General</p>
-          <div class="flex items-baseline gap-1">
-            <h3 id="stat-balance-val" class="text-3xl font-black text-white">S/. 0.00</h3>
-          </div>
-        </div>
-        <div id="stat-balance-icon-container" class="p-3.5 rounded-xl bg-white/20 text-white backdrop-blur-sm">
-          <i data-lucide="wallet" class="w-6 h-6"></i>
-        </div>
-      </div>
-
-      <!-- Cuadrícula de Sub-Métricas -->
-      <div class="grid grid-cols-2 gap-3">
-        <!-- Ingresos -->
-        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-850 shadow-sm flex flex-col justify-between">
-          <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest block">Ingresos Totales</span>
-          <div class="mt-2">
-            <span class="text-xs font-extrabold text-emerald-500 currency-symbol">S/.</span>
-            <span id="stat-income-count" class="text-lg font-black text-slate-900 dark:text-white">0.00</span>
-          </div>
-        </div>
-
-        <!-- Gastos -->
-        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-850 shadow-sm flex flex-col justify-between">
-          <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest block">Gastos / Consumo</span>
-          <div class="mt-2">
-            <span class="text-xs font-extrabold text-rose-500 currency-symbol">S/.</span>
-            <span id="stat-expenses-count" class="text-lg font-black text-slate-900 dark:text-white">0.00</span>
-          </div>
-        </div>
-
-        <!-- Días Ocupados -->
-        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-850 shadow-sm flex flex-col justify-between">
-          <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest block">Días Invertidos</span>
-          <div class="mt-2 flex items-baseline gap-1">
-            <span id="stat-days-count" class="text-lg font-black text-slate-900 dark:text-white">0</span>
-            <span class="text-[10px] text-slate-400 font-bold">días</span>
-          </div>
-        </div>
-
-        <!-- Horas Invertidas -->
-        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-850 shadow-sm flex flex-col justify-between">
-          <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest block">Horas Acumuladas</span>
-          <div class="mt-2 flex items-baseline gap-1">
-            <span id="stat-hours-count" class="text-lg font-black text-slate-900 dark:text-white">0.0</span>
-            <span class="text-[10px] text-slate-400 font-bold">horas</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Sección de Gráficos Analíticos -->
-      <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-850 shadow-sm space-y-4">
-        <h3 class="text-xs font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 uppercase tracking-wider">
-          <i data-lucide="pie-chart" class="w-4 h-4 text-theme-500"></i> Análisis de tu Agenda
-        </h3>
-
-        <div class="space-y-4">
-          <!-- Gráfico Balance de Dinero -->
-          <div class="bg-slate-50 dark:bg-slate-950 p-3 rounded-xl">
-            <h4 class="text-[10px] font-black text-slate-400 uppercase text-center mb-2">Distribución Financiera</h4>
-            <div class="relative h-44 flex items-center justify-center">
-              <canvas id="chart-balance"></canvas>
-            </div>
-          </div>
-
-          <!-- Gráfico Distribución de Horas por Categoría -->
-          <div class="bg-slate-50 dark:bg-slate-950 p-3 rounded-xl">
-            <h4 class="text-[10px] font-black text-slate-400 uppercase text-center mb-2">Horas por Categoría</h4>
-            <div class="relative h-44 flex items-center justify-center">
-              <canvas id="chart-categories"></canvas>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PESTAÑA 2: CALENDARIO -->
-    <div id="view-calendar" class="view-panel p-4 space-y-4 hidden">
-      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-850 shadow-sm p-4">
+    <!-- CONTENEDOR PRINCIPAL (Simulación de Pantalla de Teléfono) -->
+    <div class="relative w-full max-w-md h-screen md:h-[844px] md:rounded-[40px] md:shadow-2xl overflow-hidden custom-app-bg flex flex-col border border-gray-100/10 transition-all">
         
-        <!-- Cabecera del Mes en Calendario -->
-        <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
-          <h2 class="font-bold text-xs uppercase tracking-wider text-slate-500">Mis Fechas</h2>
-          <div class="flex items-center gap-1">
-            <button onclick="prevMonth()" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-850 rounded-lg">
-              <i data-lucide="chevron-left" class="w-4 h-4"></i>
-            </button>
-            <span id="calendar-month-year" class="text-xs font-extrabold uppercase text-slate-700 dark:text-slate-300 min-w-[90px] text-center">Junio 2026</span>
-            <button onclick="nextMonth()" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-850 rounded-lg">
-              <i data-lucide="chevron-right" class="w-4 h-4"></i>
-            </button>
-          </div>
-        </div>
-
-        <!-- Matriz -->
-        <div class="mt-4">
-          <div class="grid grid-cols-7 text-center text-[10px] font-black text-slate-400 mb-2">
-            <div>DO</div><div>LU</div><div>MA</div><div>MI</div><div>JU</div><div>VI</div><div>SÁ</div>
-          </div>
-          <div id="calendar-days" class="grid grid-cols-7 gap-1">
-            <!-- Dinámico -->
-          </div>
-        </div>
-
-        <!-- Instrucciones en Pantalla -->
-        <div class="mt-4 p-3 bg-theme-50 dark:bg-theme-900/20 text-[10px] text-theme-700 dark:text-theme-400 rounded-xl flex items-center gap-2">
-          <i data-lucide="info" class="w-4 h-4 shrink-0"></i>
-          <span>Toca cualquier día libre del calendario para programar una actividad en esa fecha.</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- PESTAÑA 3: REGISTRAR (FORMULARIO CON CÁLCULOS EN TIEMPO REAL) -->
-    <div id="view-add" class="view-panel p-4 space-y-4 hidden">
-      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-850 shadow-sm p-4 space-y-4">
-        
-        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-          <h2 id="form-title" class="font-extrabold text-sm text-slate-900 dark:text-white">Nuevo Registro</h2>
-          <button id="btn-cancel-edit" onclick="resetForm()" class="hidden text-xs text-rose-500 font-bold">Cancelar Edición</button>
-        </div>
-
-        <form id="event-form" class="space-y-4" onsubmit="saveEvent(event)">
-          <input type="hidden" id="event-id">
-
-          <!-- Selector de Flujo: Actividad vs Consumo -->
-          <div>
-            <label class="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1.5">Tipo de Registro</label>
-            <div class="grid grid-cols-2 gap-2">
-              <label class="flex items-center justify-center gap-1.5 p-3 rounded-xl border border-slate-100 dark:border-slate-850 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-950">
-                <input type="radio" name="event-flow" value="income" checked onchange="toggleFlowType('income')" class="text-theme-500 focus:ring-theme-500">
-                <span class="text-[11px] font-black text-emerald-600 dark:text-emerald-500">INGRESO</span>
-              </label>
-              <label class="flex items-center justify-center gap-1.5 p-3 rounded-xl border border-slate-100 dark:border-slate-850 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-950">
-                <input type="radio" name="event-flow" value="expense" onchange="toggleFlowType('expense')" class="text-rose-500 focus:ring-rose-500">
-                <span class="text-[11px] font-black text-rose-600 dark:text-rose-400">GASTO (CONSUMO)</span>
-              </label>
-            </div>
-          </div>
-
-          <!-- Descripción -->
-          <div>
-            <label class="block text-[10px] font-black text-slate-400 dark:text-slate-500 tracking-widest mb-1">Descripción</label>
-            <input type="text" id="event-desc" required placeholder="Ej. Capacitación técnica, Pasajes en bus, Almuerzo..." class="w-full bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-850 focus:border-theme-500 focus:ring-2 focus:ring-theme-500/10 rounded-xl px-3.5 py-2.5 text-xs outline-none text-slate-800 dark:text-slate-100">
-          </div>
-
-          <!-- Fechas -->
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Desde</label>
-              <input type="date" id="event-start-date" required oninput="calculateRealtimeStats()" class="w-full bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-850 focus:border-theme-500 rounded-xl px-3 py-2 text-xs outline-none text-slate-800 dark:text-slate-100">
-            </div>
-            <div>
-              <label class="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Hasta</label>
-              <input type="date" id="event-end-date" required oninput="calculateRealtimeStats()" class="w-full bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-850 focus:border-theme-500 rounded-xl px-3 py-2 text-xs outline-none text-slate-800 dark:text-slate-100">
-            </div>
-          </div>
-
-          <!-- Horas -->
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Hora Inicio</label>
-              <input type="time" id="event-start-time" required oninput="calculateRealtimeStats()" class="w-full bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-850 focus:border-theme-500 rounded-xl px-3 py-2 text-xs outline-none text-slate-800 dark:text-slate-100">
-            </div>
-            <div>
-              <label class="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Hora Fin</label>
-              <input type="time" id="event-end-time" required oninput="calculateRealtimeStats()" class="w-full bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-850 focus:border-theme-500 rounded-xl px-3 py-2 text-xs outline-none text-slate-800 dark:text-slate-100">
-            </div>
-          </div>
-
-          <!-- Monto por Día & Categorías -->
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label id="label-money" class="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Ganancia por Día</label>
-              <div class="relative">
-                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-black text-slate-400 currency-symbol">S/.</span>
-                <input type="number" id="event-earnings" min="0" step="any" oninput="calculateRealtimeStats()" placeholder="0.00" class="w-full bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-850 focus:border-theme-500 rounded-xl pl-8 pr-3 py-2 text-xs outline-none text-slate-800 dark:text-slate-100">
-              </div>
-            </div>
-            <div>
-              <label class="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Categoría</label>
-              <div class="flex gap-1">
-                <select id="event-category" required class="flex-1 bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-850 focus:border-theme-500 rounded-xl px-2 py-2 text-xs outline-none text-slate-800 dark:text-slate-100">
-                  <!-- JS populated -->
-                </select>
-                <button type="button" onclick="createNewCategory()" class="p-2 bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 rounded-xl">
-                  <i data-lucide="plus" class="w-4 h-4"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Color del Evento -->
-          <div>
-            <label class="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1.5">Color del Marcador</label>
-            <div class="flex items-center gap-3 bg-slate-50 dark:bg-slate-955 p-2 rounded-xl border border-slate-100 dark:border-slate-850 justify-around">
-              <input type="hidden" id="event-color" value="emerald">
-              <button type="button" onclick="selectEventColor('emerald', this)" class="color-dot w-6 h-6 rounded-full bg-emerald-500 border-2 border-white ring-2 ring-emerald-500/50 scale-110" title="Esmeralda"></button>
-              <button type="button" onclick="selectEventColor('sky', this)" class="color-dot w-6 h-6 rounded-full bg-sky-500 border-2 border-transparent" title="Celeste"></button>
-              <button type="button" onclick="selectEventColor('violet', this)" class="color-dot w-6 h-6 rounded-full bg-violet-500 border-2 border-transparent" title="Violeta"></button>
-              <button type="button" onclick="selectEventColor('rose', this)" class="color-dot w-6 h-6 rounded-full bg-rose-500 border-2 border-transparent" title="Rosa"></button>
-              <button type="button" onclick="selectEventColor('amber', this)" class="color-dot w-6 h-6 rounded-full bg-amber-500 border-2 border-transparent" title="Ámbar"></button>
-            </div>
-          </div>
-
-          <!-- Panel de Resultados en Tiempo Real -->
-          <div class="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-955 dark:to-slate-900 p-3.5 rounded-xl border border-slate-100 dark:border-slate-850 space-y-2 text-center">
-            <h4 class="text-[9px] font-black text-theme-500 uppercase tracking-widest flex items-center justify-center gap-1">
-              <i data-lucide="calculator" class="w-3.5 h-3.5"></i> Resumen en Vivo
-            </h4>
-            <div class="grid grid-cols-4 gap-1 text-[10px]">
-              <div>
-                <span class="block text-slate-400 text-[8px] uppercase font-bold">Días</span>
-                <span id="calc-days" class="font-black">-</span>
-              </div>
-              <div>
-                <span class="block text-slate-400 text-[8px] uppercase font-bold">Hrs/Día</span>
-                <span id="calc-hours-per-day" class="font-black">-</span>
-              </div>
-              <div>
-                <span class="block text-slate-400 text-[8px] uppercase font-bold">Total Hrs</span>
-                <span id="calc-total-hours" class="font-black">-</span>
-              </div>
-              <div id="calc-earnings-wrapper" class="bg-white dark:bg-slate-955 p-1.5 rounded-lg border border-slate-100 dark:border-slate-850">
-                <span id="calc-earnings-label" class="block text-[8px] font-bold text-emerald-500 uppercase">Total</span>
-                <span id="calc-total-earnings" class="font-black text-emerald-500">-</span>
-              </div>
-            </div>
-            <div id="calc-error" class="hidden text-[9px] text-rose-500 font-bold bg-rose-50 dark:bg-rose-950/20 p-1 rounded-lg">
-              Verifica las horas y fechas ingresadas.
-            </div>
-          </div>
-
-          <button type="submit" class="w-full bg-theme-600 hover:bg-theme-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-theme-500/20 transition-all flex items-center justify-center gap-2 text-xs">
-            <i data-lucide="save" class="w-4 h-4"></i>
-            <span id="btn-submit-text">Guardar Actividad</span>
-          </button>
-        </form>
-      </div>
-    </div>
-
-    <!-- PESTAÑA 4: HISTORIAL (REGISTRO Y LISTA DE OPERACIONES) -->
-    <div id="view-list" class="view-panel p-4 space-y-4 hidden">
-      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-850 shadow-sm p-4 space-y-3">
-        
-        <!-- Buscador Móvil Integrado -->
-        <div class="relative w-full">
-          <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
-          <input type="text" id="event-search" oninput="renderEventsList()" placeholder="Buscar en historial..." class="w-full bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-850 rounded-xl pl-9 pr-4 py-2 text-xs outline-none transition-all text-slate-800 dark:text-slate-100">
-        </div>
-
-        <div class="flex items-center justify-between">
-          <span class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Mis Registros</span>
-          <button onclick="clearAllEvents()" class="text-[10px] text-rose-500 font-bold hover:underline flex items-center gap-1">
-            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Borrar Todo
-          </button>
-        </div>
-
-        <!-- Contenedor móvil de tarjetas -->
-        <div id="events-mobile-list" class="space-y-3">
-          <!-- Dinámico -->
-        </div>
-
-        <!-- Vista vacía -->
-        <div id="no-events-view" class="p-8 text-center flex flex-col items-center justify-center space-y-2 hidden">
-          <div class="p-3 bg-slate-100 dark:bg-slate-955 rounded-full text-slate-400">
-            <i data-lucide="inbox" class="w-6 h-6"></i>
-          </div>
-          <h4 class="font-bold text-slate-700 dark:text-slate-300 text-xs">Tu agenda está vacía</h4>
-          <p class="text-[10px] text-slate-400 max-w-xs mx-auto">Comienza agregando una nueva actividad o cargando el ejemplo desde la pestaña de Ajustes.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- PESTAÑA 5: AJUSTES (CONFIGURACIÓN DE LA APP NATIVA) -->
-    <div id="view-settings" class="view-panel p-4 space-y-4 hidden">
-      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-850 shadow-sm p-5 space-y-5">
-        
-        <div class="border-b border-slate-100 dark:border-slate-800 pb-3">
-          <h2 class="font-black text-sm text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-            <i data-lucide="settings" class="w-4 h-4 text-theme-500"></i> Ajustes de la App
-          </h2>
-          <p class="text-[9px] text-slate-400 uppercase font-bold mt-0.5">Personaliza tu Agenda Móvil</p>
-        </div>
-
-        <!-- Color Principal de la App -->
-        <div class="space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold text-slate-600 dark:text-slate-300">Color de Énfasis</span>
-            <span id="active-theme-name" class="text-[9px] font-black uppercase text-theme-500">Esmeralda</span>
-          </div>
-          <div class="flex items-center gap-3 bg-slate-50 dark:bg-slate-955 p-3 rounded-xl border border-slate-100 dark:border-slate-850 justify-around">
-            <button onclick="setTheme('emerald')" class="w-6 h-6 rounded-full bg-emerald-500 border-2 border-transparent transition-transform active:scale-90" title="Esmeralda"></button>
-            <button onclick="setTheme('ocean')" class="w-6 h-6 rounded-full bg-sky-500 border-2 border-transparent transition-transform active:scale-90" title="Océano"></button>
-            <button onclick="setTheme('amethyst')" class="w-6 h-6 rounded-full bg-purple-500 border-2 border-transparent transition-transform active:scale-90" title="Amatista"></button>
-            <button onclick="setTheme('sunset')" class="w-6 h-6 rounded-full bg-orange-500 border-2 border-transparent transition-transform active:scale-90" title="Atardecer"></button>
-            <button onclick="setTheme('charcoal')" class="w-6 h-6 rounded-full bg-slate-500 border-2 border-transparent transition-transform active:scale-90" title="Carbón"></button>
-          </div>
-        </div>
-
-        <!-- Divisa (Monedas) -->
-        <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-955 p-3 rounded-xl border border-slate-100 dark:border-slate-850">
-          <div class="space-y-0.5">
-            <span class="text-[11px] font-bold text-slate-600 dark:text-slate-300 block">Moneda de Trabajo</span>
-            <span class="text-[9px] text-slate-400 block">Símbolo actual de finanzas</span>
-          </div>
-          <select id="currency-selector" onchange="changeCurrency(this.value)" class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-xs font-bold px-3 py-2 rounded-xl focus:outline-none text-slate-800 dark:text-slate-100">
-            <option value="PEN">S/. (Soles PEN)</option>
-            <option value="USD">$ (Dólares USD)</option>
-            <option value="EUR">€ (Euros EUR)</option>
-          </select>
-        </div>
-
-        <!-- Modo Oscuro / Claro -->
-        <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-955 p-3 rounded-xl border border-slate-100 dark:border-slate-850">
-          <div class="space-y-0.5">
-            <span class="text-[11px] font-bold text-slate-600 dark:text-slate-300 block">Tema Oscuro</span>
-            <span class="text-[9px] text-slate-400 block">Optimiza la visualización de noche</span>
-          </div>
-          <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 text-slate-600 dark:text-slate-400 flex items-center justify-center">
-            <i data-lucide="sun" id="sun-icon" class="w-4 h-4 hidden dark:block text-amber-400"></i>
-            <i data-lucide="moon" id="moon-icon" class="w-4 h-4 block dark:hidden text-slate-600"></i>
-          </button>
-        </div>
-
-        <!-- Acciones con Datos -->
-        <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-          <span class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest block">Acciones de Datos</span>
-          
-          <div class="grid grid-cols-1 gap-2">
-            <!-- Cargar Ejemplo -->
-            <button type="button" onclick="loadMockData()" class="w-full p-3 text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-50 hover:bg-slate-100 dark:bg-slate-955 dark:hover:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-xl flex items-center justify-between">
-              <span class="flex items-center gap-2"><i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i> Cargar Datos de Ejemplo</span>
-              <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
-            </button>
+        <!-- FLUJO PRINCIPAL DE CONTENIDO (Se le aplica blur al abrir menús) -->
+        <div id="main-content-flow" class="absolute inset-0 w-full h-full flex flex-col transition-all duration-300">
             
-            <!-- Exportar copia -->
-            <button type="button" onclick="exportData()" class="w-full p-3 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-slate-50 hover:bg-slate-100 dark:bg-slate-955 dark:hover:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-xl flex items-center justify-between">
-              <span class="flex items-center gap-2"><i data-lucide="download" class="w-4 h-4"></i> Guardar Copia (.json)</span>
-              <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
-            </button>
+            <!-- PANTALLA 1: DASHBOARD & TRANSACCIONES (Izquierda) -->
+            <div id="screen-dashboard" class="absolute inset-0 w-full h-full flex flex-col p-6 pb-20 screen-transition z-10">
+                <!-- Header superior pulido -->
+                <div class="flex justify-between items-center mb-5">
+                    <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold border border-white shadow-sm cursor-pointer" onclick="openSection('settings')">
+                        <i data-lucide="user" class="w-5 h-5"></i>
+                    </div>
+                    <div class="text-center">
+                        <span class="text-[10px] uppercase tracking-wider custom-text-secondary font-bold">Presupuesto Activo</span>
+                        <h2 class="text-sm font-extrabold custom-text-primary" id="active-card-title">Cargando...</h2>
+                    </div>
+                    <button onclick="openSection('settings')" class="w-10 h-10 rounded-xl custom-card-bg shadow-soft flex items-center justify-center custom-text-primary hover:opacity-80 transition-all">
+                        <i data-lucide="sliders-horizontal" class="w-5 h-5"></i>
+                    </button>
+                </div>
 
-            <!-- Importar copia -->
-            <button type="button" onclick="triggerImport()" class="w-full p-3 text-xs font-bold text-violet-600 dark:text-violet-400 bg-slate-50 hover:bg-slate-100 dark:bg-slate-955 dark:hover:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-xl flex items-center justify-between">
-              <span class="flex items-center gap-2"><i data-lucide="upload" class="w-4 h-4"></i> Cargar Copia de Respaldo</span>
-              <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
-            </button>
-            <input type="file" id="import-file" class="hidden" accept=".json" onchange="importData(event)">
-          </div>
+                <!-- SELECTOR DE TARJETAS REDISEÑADO -->
+                <div class="w-full relative mb-5 flex flex-col items-center">
+                    <div class="w-full flex items-center justify-between gap-2">
+                        <!-- Flecha Izquierda -->
+                        <button onclick="navigateCard(-1)" class="w-8 h-8 rounded-full custom-card-bg shadow-soft flex items-center justify-center custom-text-primary hover:opacity-80 active:scale-90 transition-all">
+                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                        </button>
+
+                        <!-- Contenedor Único de Tarjeta Activa (Diseño idéntico a las imágenes de referencia) -->
+                        <div id="active-card-container" class="flex-1 max-w-[290px] aspect-[1.65/1] rounded-3xl text-white relative overflow-hidden transition-all duration-300 shadow-lg">
+                            <!-- Inyectado dinámicamente en renderCardSelector() -->
+                        </div>
+
+                        <!-- Flecha Derecha -->
+                        <button onclick="navigateCard(1)" class="w-8 h-8 rounded-full custom-card-bg shadow-soft flex items-center justify-center custom-text-primary hover:opacity-80 active:scale-90 transition-all">
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <!-- Puntos indicadores de tarjetas -->
+                    <div class="flex justify-center gap-1.5 mt-3.5" id="card-dots-container">
+                        <!-- Puntos dinámicos -->
+                    </div>
+                </div>
+
+                <!-- BOTONES DE ACCIÓN EXCLUSIVOS: GASTOS E INGRESOS (Debajo de la tarjeta) -->
+                <div class="grid grid-cols-2 gap-4 mb-6 w-full">
+                    <!-- Botón Registrar Gasto -->
+                    <button onclick="openAddTransactionModal('expense')" class="py-3.5 px-4 rounded-2xl text-white font-bold flex items-center justify-center gap-2 bg-rose-500 shadow-md active:scale-95 transition-transform">
+                        <i data-lucide="arrow-down-circle" class="w-5 h-5"></i>
+                        <span>Gasto</span>
+                    </button>
+                    <!-- Botón Registrar Ingreso -->
+                    <button onclick="openAddTransactionModal('income')" class="py-3.5 px-4 rounded-2xl text-white font-bold flex items-center justify-center gap-2 bg-emerald-500 shadow-md active:scale-95 transition-transform">
+                        <i data-lucide="arrow-up-circle" class="w-5 h-5"></i>
+                        <span>Ingreso</span>
+                    </button>
+                </div>
+
+                <!-- Sección de Transacciones (Bandeja Inferior Deslizable) -->
+                <div class="flex-1 flex flex-col custom-card-bg rounded-t-[32px] -mx-6 px-6 pt-5 shadow-soft-lg overflow-hidden transition-colors">
+                    <div class="w-12 h-1 bg-slate-300/60 rounded-full mx-auto mb-4"></div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-base font-bold custom-text-primary">Transacciones de esta Tarjeta</h3>
+                        <div class="relative flex items-center">
+                            <input type="text" id="search-input" oninput="renderTransactions()" placeholder="Buscar..." class="w-28 focus:w-36 transition-all duration-300 text-xs px-3 py-1.5 rounded-full border-none outline-none custom-text-primary pl-8" style="background-color: var(--nested-bg);">
+                            <i data-lucide="search" class="w-3.5 h-3.5 custom-text-secondary absolute left-2.5"></i>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Transacciones Recientes -->
+                    <div class="flex-1 overflow-y-auto no-scrollbar space-y-3.5 pb-6" id="transactions-list">
+                        <!-- Aquí se inyectan dinámicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANTALLA 2: ESTADÍSTICAS & CATEGORÍAS (Derecha) -->
+            <div id="screen-stats" class="absolute inset-0 w-full h-full flex flex-col p-6 pb-20 screen-transition translate-x-full opacity-0 z-10">
+                <!-- Header superior -->
+                <div class="flex justify-between items-center mb-5">
+                    <button onclick="changeTab('dashboard')" class="w-10 h-10 rounded-xl custom-card-bg shadow-soft flex items-center justify-center custom-text-primary hover:opacity-80 transition-all">
+                        <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                    </button>
+                    <div class="text-center">
+                        <span class="text-xs custom-text-secondary font-medium" id="stats-card-label">Balance de Tarjeta</span>
+                        <h1 class="text-2xl font-black custom-text-primary" id="stats-total-balance">$0.00</h1>
+                    </div>
+                    <button onclick="openSection('settings')" class="w-10 h-10 rounded-xl custom-card-bg shadow-soft flex items-center justify-center custom-text-primary hover:opacity-80 transition-all">
+                        <i data-lucide="sliders-horizontal" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <!-- Selector de tipo (Ingresos / Gastos) -->
+                <div class="p-1 rounded-2xl flex mb-6" style="background-color: var(--nested-bg);">
+                    <button id="tab-savings" onclick="setStatsFilter('income')" class="flex-1 py-2.5 text-xs font-semibold rounded-xl text-center transition-all bg-white text-slate-800 shadow-sm">
+                        Ingresos
+                    </button>
+                    <button id="tab-expenses" onclick="setStatsFilter('expense')" class="flex-1 py-2.5 text-xs font-semibold rounded-xl text-center transition-all text-slate-500">
+                        Gastos
+                    </button>
+                </div>
+
+                <!-- Gráfico Histórico Dinámico SVG -->
+                <div class="mb-6 custom-card-bg p-4 rounded-3xl shadow-soft">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-sm font-bold custom-text-primary">Historial</h3>
+                        <select id="chart-period" onchange="renderHistoryChart()" class="text-xs border-none outline-none font-semibold custom-text-secondary py-1 px-2.5 rounded-lg" style="background-color: var(--nested-bg);">
+                            <option value="6">Últimos 6 meses</option>
+                            <option value="12">Este año</option>
+                        </select>
+                    </div>
+                    <!-- Contenedor del Gráfico Dinámico -->
+                    <div class="relative h-32 w-full" id="chart-container">
+                        <!-- El SVG interactivo se genera mediante JS -->
+                    </div>
+                </div>
+
+                <!-- Presupuesto Consumido Mensual -->
+                <div id="budget-progress-card" class="mb-6 rounded-3xl p-4 text-white shadow-lg flex items-center gap-4 relative overflow-hidden transition-all duration-300">
+                    <!-- Círculo de porcentaje tipo SVG -->
+                    <div class="relative w-14 h-14 flex items-center justify-center shrink-0">
+                        <svg class="w-full h-full transform -rotate-90">
+                            <circle cx="28" cy="28" r="24" stroke="rgba(255,255,255,0.2)" stroke-width="4" fill="transparent" />
+                            <circle cx="28" cy="28" r="24" stroke="white" stroke-width="4" fill="transparent" stroke-dasharray="150" stroke-dashoffset="40" id="credit-progress-ring" class="transition-all duration-1000" />
+                        </svg>
+                        <span class="absolute text-[11px] font-bold" id="credit-percent">0%</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] uppercase tracking-wider opacity-80" id="budget-card-title">Presupuesto Mensual</span>
+                        <h4 class="text-sm font-bold mt-0.5" id="credit-limit-text">$0 de $0</h4>
+                    </div>
+                    <i data-lucide="info" class="w-5 h-5 ml-auto opacity-80"></i>
+                </div>
+
+                <!-- Sección de Categorías -->
+                <div class="flex-1 flex flex-col overflow-hidden">
+                    <h3 class="text-sm font-bold custom-text-primary mb-3">Distribución por Categorías</h3>
+                    <!-- Grid de Categorías -->
+                    <div class="flex-1 overflow-y-auto no-scrollbar grid grid-cols-2 gap-3 pb-6" id="categories-grid">
+                        <!-- Dinámicas -->
+                    </div>
+                </div>
+            </div>
+
+        </div> <!-- FIN DEL FLUJO PRINCIPAL -->
+
+        <!-- PANTALLA 3: CONFIGURACIÓN & ESTUDIO DE DISEÑO -->
+        <div id="screen-settings" class="absolute inset-0 w-full h-full flex flex-col p-6 pb-20 screen-transition translate-x-full opacity-0 z-40 bg-white/95 backdrop-blur-xl" style="background-color: rgba(var(--card-bg-rgb, 255,255,255), 0.96);">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-6">
+                <button onclick="closeSection('settings')" class="w-10 h-10 rounded-xl custom-card-bg shadow-soft flex items-center justify-center custom-text-primary hover:opacity-80 transition-all">
+                    <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                </button>
+                <h2 class="text-lg font-bold custom-text-primary">Personalización & Ajustes</h2>
+                <div class="w-10"></div>
+            </div>
+
+            <!-- Contenido de Configuración Scrollable -->
+            <div class="flex-1 overflow-y-auto no-scrollbar space-y-6">
+                
+                <!-- Acciones Financieras Rápidas (NUEVO LUGAR PARA TRANSFERENCIAS) -->
+                <div class="p-5 rounded-3xl shadow-soft border" style="background-color: var(--card-bg); border-color: rgba(128,128,128,0.1);">
+                    <h3 class="text-sm font-bold custom-text-primary mb-3 flex items-center gap-2">
+                        <i data-lucide="arrow-left-right" class="w-4 h-4 text-indigo-500"></i> Acciones Financieras
+                    </h3>
+                    <p class="text-xs custom-text-secondary mb-4">Transfiere fondos de un presupuesto de cuenta a otro presupuesto de forma segura.</p>
+                    <button onclick="openAddTransactionModal('transfer')" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors shadow-sm">
+                        <i data-lucide="arrow-left-right" class="w-4 h-4"></i> Registrar Transferencia
+                    </button>
+                </div>
+
+                <!-- Gestión de Tarjetas / Presupuestos -->
+                <div class="p-5 rounded-3xl shadow-soft border" style="background-color: var(--card-bg); border-color: rgba(128,128,128,0.1);">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-sm font-bold custom-text-primary flex items-center gap-2">
+                            <i data-lucide="credit-card" class="w-4 h-4 text-indigo-500"></i> Mis Tarjetas / Presupuestos
+                        </h3>
+                        <button onclick="openAddCardModal()" class="text-xs font-bold text-indigo-600 flex items-center gap-1 hover:opacity-85">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Añadir
+                        </button>
+                    </div>
+                    <p class="text-xs custom-text-secondary mb-4">Añade diferentes cuentas con presupuestos individuales para llevar tus finanzas separadas.</p>
+                    <div class="space-y-2 max-h-52 overflow-y-auto no-scrollbar" id="settings-cards-list">
+                        <!-- Tarjetas editables dinámicas -->
+                    </div>
+                </div>
+
+                <!-- Copia de seguridad (NUEVO LUGAR PARA EXPORTACIÓN) -->
+                <div class="p-5 rounded-3xl shadow-soft border" style="background-color: var(--card-bg); border-color: rgba(128,128,128,0.1);">
+                    <h3 class="text-sm font-bold custom-text-primary mb-3 flex items-center gap-2">
+                        <i data-lucide="database" class="w-4 h-4 text-indigo-500"></i> Copia de Seguridad Portátil
+                    </h3>
+                    <p class="text-xs custom-text-secondary mb-4">Exporta tus presupuestos y transacciones a un archivo JSON para moverlo a otro dispositivo fácilmente.</p>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="exportData()" class="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold custom-text-primary" style="background-color: var(--nested-bg);">
+                            <i data-lucide="download" class="w-4 h-4"></i> Exportar
+                        </button>
+                        <label class="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-indigo-600 text-xs font-semibold cursor-pointer text-center hover:opacity-85" style="background-color: rgba(99, 102, 241, 0.1);">
+                            <i data-lucide="upload" class="w-4 h-4"></i> Importar
+                            <input type="file" id="import-file" class="hidden" accept=".json" onchange="importData(event)">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Selector de Fondo de la App -->
+                <div class="p-5 rounded-3xl shadow-soft border" style="background-color: var(--card-bg); border-color: rgba(128,128,128,0.1);">
+                    <h3 class="text-sm font-bold custom-text-primary mb-3 flex items-center gap-2">
+                        <i data-lucide="palette" class="w-4 h-4 text-indigo-500"></i> Fondo de la Aplicación
+                    </h3>
+                    <div class="grid grid-cols-4 gap-2" id="bg-selector-grid">
+                        <!-- Botones de fondo generados por JS -->
+                    </div>
+                    <div class="mt-4 flex items-center gap-3">
+                        <label class="text-xs custom-text-secondary font-medium">Color Personalizado:</label>
+                        <input type="color" id="bg-color-picker" onchange="setCustomAppBg(this.value)" class="w-8 h-8 rounded-lg cursor-pointer border-0">
+                    </div>
+                </div>
+
+                <!-- Gestor de Categorías (Colores & Nombres) -->
+                <div class="p-5 rounded-3xl shadow-soft border" style="background-color: var(--card-bg); border-color: rgba(128,128,128,0.1);">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-sm font-bold custom-text-primary flex items-center gap-2">
+                            <i data-lucide="tag" class="w-4 h-4 text-indigo-500"></i> Editar Categorías
+                        </h3>
+                        <button onclick="openAddCategoryModal()" class="text-xs font-bold text-indigo-600 flex items-center gap-1">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Crear
+                        </button>
+                    </div>
+                    <div class="space-y-2 max-h-60 overflow-y-auto no-scrollbar" id="settings-categories-list">
+                        <!-- Categorías editables se inyectan aquí -->
+                    </div>
+                </div>
+            </div>
         </div>
 
-      </div>
+        <!-- BARRA DE NAVEGACIÓN INFERIOR -->
+        <div class="absolute bottom-0 inset-x-0 h-16 backdrop-blur-md flex items-center justify-around px-8 z-30" style="background-color: rgba(var(--card-bg-rgb, 255,255,255), 0.95); border-top: 1px solid rgba(128, 128, 128, 0.1);">
+            <button id="nav-dashboard" onclick="changeTab('dashboard')" class="flex flex-col items-center justify-center text-indigo-600 transition-colors">
+                <i data-lucide="credit-card" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium mt-0.5">Tarjetas</span>
+            </button>
+            <button id="nav-stats" onclick="changeTab('stats')" class="flex flex-col items-center justify-center custom-text-secondary transition-colors">
+                <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium mt-0.5">Estadísticas</span>
+            </button>
+            <button id="nav-settings" onclick="openSection('settings')" class="flex flex-col items-center justify-center custom-text-secondary transition-colors">
+                <i data-lucide="settings" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium mt-0.5">Ajustes</span>
+            </button>
+        </div>
+
+        <!-- MODAL: AGREGAR / EDITAR TARJETA -->
+        <div id="modal-card" class="fixed inset-0 bg-slate-950/40 backdrop-blur-md flex justify-center items-end md:items-center p-4 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+            <div class="custom-card-bg w-full max-w-sm rounded-[32px] p-6 shadow-2xl transform translate-y-10 transition-transform duration-300 border border-slate-500/10">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="card-modal-title" class="text-base font-bold custom-text-primary">Nueva Tarjeta / Presupuesto</h3>
+                    <button onclick="closeModal('modal-card')" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500" style="background-color: var(--nested-bg);">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <form id="card-form" onsubmit="saveCard(event)" class="space-y-4">
+                    <input type="hidden" id="card-form-id">
+                    <div>
+                        <label class="block text-xs font-medium custom-text-secondary mb-1">Nombre de la cuenta / Tarjeta</label>
+                        <input type="text" id="card-form-name" required placeholder="Ej. Gastos Diarios" class="w-full px-4 py-2.5 border-none outline-none rounded-2xl custom-text-primary text-xs" style="background-color: var(--nested-bg);">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium custom-text-secondary mb-1">Dígitos de Tarjeta (4 números)</label>
+                        <input type="text" id="card-form-number" required maxLength="4" placeholder="3245" class="w-full px-4 py-2.5 border-none outline-none rounded-2xl custom-text-primary text-xs" style="background-color: var(--nested-bg);">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium custom-text-secondary mb-1">Límite Mensual de Presupuesto ($)</label>
+                        <input type="number" id="card-form-limit" required placeholder="5000" class="w-full px-4 py-2.5 border-none outline-none rounded-2xl custom-text-primary text-xs" style="background-color: var(--nested-bg);">
+                    </div>
+                    <!-- Selección de Imagen de Fondo de Tarjeta desde PC -->
+                    <div>
+                        <label class="block text-xs font-medium custom-text-secondary mb-1">Imagen de Fondo Personalizada (Opcional)</label>
+                        <div class="flex items-center gap-2">
+                            <label class="flex-1 flex items-center justify-center gap-2 py-2 px-3 border border-dashed border-slate-300 rounded-xl cursor-pointer text-xs custom-text-secondary hover:opacity-80 transition-colors" style="border-color: rgba(128,128,128,0.3);">
+                                <i data-lucide="image" class="w-4 h-4 text-indigo-500"></i>
+                                <span id="card-image-label">Subir de PC</span>
+                                <input type="file" id="card-form-image" accept="image/*" onchange="handleCardImageUpload(event)" class="hidden">
+                            </label>
+                            <button type="button" id="btn-clear-card-image" onclick="clearCardImagePreview()" class="px-3 py-2 bg-rose-50 text-rose-500 rounded-xl hover:bg-rose-100 transition-colors text-xs hidden">
+                                Eliminar
+                            </button>
+                        </div>
+                        <div id="card-image-preview-container" class="mt-2 hidden">
+                            <img id="card-image-preview" src="" class="w-full h-20 object-cover rounded-xl border" style="border-color: rgba(128,128,128,0.1);">
+                        </div>
+                    </div>
+                    <!-- Gradientes para la tarjeta -->
+                    <div>
+                        <label class="block text-xs font-medium custom-text-secondary mb-1">O usar Degradado de Color (Si no subes imagen)</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <span class="text-[9px] custom-text-secondary block mb-1">Color de Inicio:</span>
+                                <input type="color" id="card-form-color-start" value="#6366f1" class="w-full h-8 rounded-lg cursor-pointer border-0">
+                            </div>
+                            <div>
+                                <span class="text-[9px] custom-text-secondary block mb-1">Color de Fin:</span>
+                                <input type="color" id="card-form-color-end" value="#4f46e5" class="w-full h-8 rounded-lg cursor-pointer border-0">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full py-3.5 rounded-2xl text-white text-xs font-bold bg-indigo-600 hover:bg-indigo-700 shadow-md">
+                        Guardar Cuenta
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- MODAL: AGREGAR TRANSACCIÓN -->
+        <div id="modal-transaction" class="fixed inset-0 bg-slate-950/40 backdrop-blur-md flex justify-center items-end md:items-center p-4 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+            <div class="custom-card-bg w-full max-w-sm rounded-[32px] p-6 shadow-2xl transform translate-y-10 transition-transform duration-300 max-h-[90vh] overflow-y-auto no-scrollbar border border-slate-500/10">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="modal-title" class="text-base font-bold custom-text-primary">Nueva Transacción</h3>
+                    <button onclick="closeModal('modal-transaction')" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-500" style="background-color: var(--nested-bg);">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <form id="transaction-form" onsubmit="saveTransaction(event)" class="space-y-3.5">
+                    <input type="hidden" id="tx-id">
+                    
+                    <div class="p-1 rounded-xl flex" style="background-color: var(--nested-bg);">
+                        <button type="button" id="form-type-expense" onclick="setFormType('expense')" class="flex-1 py-1.5 text-xs font-semibold rounded-lg text-center bg-white text-slate-800">Gasto</button>
+                        <button type="button" id="form-type-income" onclick="setFormType('income')" class="flex-1 py-1.5 text-xs font-semibold rounded-lg text-center text-slate-500">Ingreso</button>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium custom-text-secondary mb-1">A qué Tarjeta asignar</label>
+                        <select id="tx-card" required class="w-full px-4 py-2.5 border-none outline-none rounded-2xl custom-text-primary text-xs focus:ring-2 focus:ring-indigo-500" style="background-color: var(--nested-bg);">
+                            <!-- Inyectado dinámicamente -->
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium custom-text-secondary mb-1">Monto ($)</label>
+                        <input type="number" id="tx-amount" step="0.01" required placeholder="0.00" class="w-full text-xl font-bold px-4 py-2.5 border-none outline-none rounded-2xl custom-text-primary focus:ring-2 focus:ring-indigo-500" style="background-color: var(--nested-bg);">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium custom-text-secondary mb-1">Categoría</label>
+                        <select id="tx-category" required class="w-full px-4 py-2.5 border-none outline-none rounded-2xl custom-text-primary text-xs focus:ring-2 focus:ring-indigo-500" style="background-color: var(--nested-bg);">
+                            <!-- Inyección dinámica -->
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium custom-text-secondary mb-1">Nombre del Establecimiento / Detalle</label>
+                        <input type="text" id="tx-title" required placeholder="Ej. Uber, Starbucks, Supermercado" class="w-full px-4 py-2.5 border-none outline-none rounded-2xl custom-text-primary text-xs focus:ring-2 focus:ring-indigo-500" style="background-color: var(--nested-bg);">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium custom-text-secondary mb-1">Fecha</label>
+                        <input type="date" id="tx-date" required class="w-full px-4 py-2.5 border-none outline-none rounded-2xl custom-text-primary text-xs focus:ring-2 focus:ring-indigo-500" style="background-color: var(--nested-bg);">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium custom-text-secondary mb-1">Etiqueta Personalizada (Tag)</label>
+                        <input type="text" id="tx-tag" placeholder="Ej: Trabajo, Placer, Necesidad" class="w-full px-4 py-2.5 border-none outline-none rounded-2xl custom-text-primary text-xs focus:ring-2 focus:ring-indigo-500" style="background-color: var(--nested-bg);">
+                    </div>
+
+                    <button type="submit" class="w-full py-3.5 rounded-2xl text-white font-bold bg-indigo-600 hover:bg-indigo-700 shadow-md active:scale-95 transition-all text-xs">
+                        Confirmar Transacción
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- MODAL: EDITAR / AÑADIR CATEGORÍA -->
+        <div id="modal-category" class="fixed inset-0 bg-slate-950/40 backdrop-blur-md flex justify-center items-end md:items-center p-4 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+            <div class="custom-card-bg w-full max-w-sm rounded-[32px] p-6 shadow-2xl transform translate-y-10 transition-transform duration-300 border border-slate-500/10">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="cat-modal-title" class="text-base font-bold custom-text-primary">Nueva Categoría</h3>
+                    <button onclick="closeModal('modal-category')" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-500" style="background-color: var(--nested-bg);">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <form id="category-form" onsubmit="saveCategory(event)" class="space-y-4">
+                    <input type="hidden" id="cat-id">
+                    
+                    <div>
+                        <label class="block text-xs font-medium custom-text-secondary mb-1">Nombre de la Categoría</label>
+                        <input type="text" id="cat-name" required placeholder="Ej: Supermercado" class="w-full px-4 py-2.5 border-none outline-none rounded-2xl custom-text-primary text-xs" style="background-color: var(--nested-bg);">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium custom-text-secondary mb-1">Color de Identificación</label>
+                        <div class="flex gap-2 flex-wrap" id="cat-colors-palette">
+                            <!-- Colores por defecto -->
+                        </div>
+                        <div class="mt-2 flex items-center gap-2">
+                            <span class="text-xs custom-text-secondary">Color a medida:</span>
+                            <input type="color" id="cat-custom-color" class="w-8 h-8 rounded cursor-pointer border-0">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium custom-text-secondary mb-1">Icono</label>
+                        <select id="cat-icon" class="w-full px-4 py-2.5 border-none outline-none rounded-2xl custom-text-primary text-xs" style="background-color: var(--nested-bg);">
+                            <option value="shopping-bag">Bolsa de Compras (Shopping)</option>
+                            <option value="car">Automóvil / Taxi</option>
+                            <option value="coffee">Taza de Café</option>
+                            <option value="utensils">Comida / Restaurante</option>
+                            <option value="film">Entretenimiento / Cine</option>
+                            <option value="heart-pulse">Salud / Médico</option>
+                            <option value="home">Hogar / Alquiler</option>
+                            <option value="plane">Viajes</option>
+                            <option value="graduation-cap">Educación</option>
+                            <option value="dollar-sign">Ingreso General</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="w-full py-3.5 rounded-2xl text-white font-bold bg-indigo-600 hover:bg-indigo-700 shadow-md text-xs">
+                        Guardar Categoría
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- TOAST / NOTIFICACIÓN PREMIUM -->
+        <div id="toast-message" class="fixed top-6 left-1/2 transform -translate-x-1/2 px-5 py-3 rounded-full bg-slate-900/90 text-white text-xs font-semibold shadow-xl flex items-center gap-2 opacity-0 pointer-events-none transition-all duration-300 z-50">
+            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
+            <span id="toast-text">Hecho con éxito</span>
+        </div>
+
     </div>
 
-  </main>
-
-  <!-- BARRA DE NAVEGACIÓN INFERIOR (ESTILO APP NATIVA MÓVIL) -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 border-t border-slate-150 dark:border-slate-850 py-2 flex justify-around items-center z-40 backdrop-blur-md pb-safe">
-    
-    <!-- Tab 1: Dashboard -->
-    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn flex flex-col items-center justify-center w-14 py-1 text-theme-500">
-      <i data-lucide="layout-dashboard" class="w-5 h-5 mb-0.5"></i>
-      <span class="text-[9px] font-bold">Inicio</span>
-    </button>
-
-    <!-- Tab 2: Calendario -->
-    <button onclick="switchTab('calendar')" id="nav-calendar" class="nav-btn flex flex-col items-center justify-center w-14 py-1 text-slate-400 dark:text-slate-500 hover:text-theme-500">
-      <i data-lucide="calendar" class="w-5 h-5 mb-0.5"></i>
-      <span class="text-[9px] font-bold">Calendario</span>
-    </button>
-
-    <!-- Tab 3: Registrar (Formulario) -->
-    <button onclick="switchTab('add')" id="nav-add" class="nav-btn flex flex-col items-center justify-center w-14 py-1 text-slate-400 dark:text-slate-500 hover:text-theme-500">
-      <i data-lucide="plus-circle" class="w-5 h-5 mb-0.5"></i>
-      <span class="text-[9px] font-bold">Añadir</span>
-    </button>
-
-    <!-- Tab 4: Historial -->
-    <button onclick="switchTab('list')" id="nav-list" class="nav-btn flex flex-col items-center justify-center w-14 py-1 text-slate-400 dark:text-slate-500 hover:text-theme-500">
-      <i data-lucide="history" class="w-5 h-5 mb-0.5"></i>
-      <span class="text-[9px] font-bold">Historial</span>
-    </button>
-
-    <!-- Tab 5: Ajustes -->
-    <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn flex flex-col items-center justify-center w-14 py-1 text-slate-400 dark:text-slate-500 hover:text-theme-500">
-      <i data-lucide="settings" class="w-5 h-5 mb-0.5"></i>
-      <span class="text-[9px] font-bold">Ajustes</span>
-    </button>
-  </nav>
-
-  <!-- Inyección segura para Cordova nativo -->
-  <script src="cordova.js"></script>
-
-  <!-- SCRIPT LOGIC DE LA APP -->
-  <script>
-    let events = [];
-    let categories = ["Capacitación", "Transporte", "Comida", "Ocio", "Trabajo", "Salud", "Otro"];
-    let currentTheme = 'emerald';
-    let isDarkMode = false;
-    let selectedCurrency = 'PEN';
-
-    const currencySymbols = {
-      'PEN': 'S/. ',
-      'USD': '$ ',
-      'EUR': '€ '
-    };
-
-    // Instancia de gráficos ChartJS
-    let chartBalanceInstance = null;
-    let chartCategoriesInstance = null;
-
-    // Calendario centrado por defecto en el mes de los ejemplos
-    let calendarDate = new Date(2026, 5, 1);
-
-    // Sistema de navegación nativa entre pestañas
-    function switchTab(tabId) {
-      document.querySelectorAll('.view-panel').forEach(panel => {
-        panel.classList.add('hidden');
-      });
-      document.getElementById(`view-${tabId}`).classList.remove('hidden');
-
-      document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('text-theme-500');
-        btn.classList.add('text-slate-400', 'dark:text-slate-500');
-      });
-      const activeNav = document.getElementById(`nav-${tabId}`);
-      activeNav.classList.remove('text-slate-400', 'dark:text-slate-500');
-      activeNav.classList.add('text-theme-500');
-
-      if (tabId === 'dashboard') {
-        setTimeout(renderCharts, 100);
-      }
-    }
-
-    // Sincronizar el color de la barra del sistema del celular de manera homogénea (Web & Cordova)
-    function updateThemeColorMeta() {
-      const meta = document.getElementById('meta-theme-color');
-      if (meta) {
-        const themeBg = isDarkMode ? '#020617' : '#f8fafc';
-        meta.setAttribute('content', themeBg);
-        
-        document.documentElement.style.backgroundColor = themeBg;
-        document.body.style.backgroundColor = themeBg;
-
-        // Soporte Dinámico para Plugins Nativos de Cordova si se compila con ellos
-        if (window.StatusBar) {
-          StatusBar.backgroundColorByHexString(themeBg);
-          if (isDarkMode) {
-            StatusBar.styleLightContent();
-          } else {
-            StatusBar.styleDefault();
-          }
-        }
-        if (window.NavigationBar) {
-          const navColor = isDarkMode ? '#0f172a' : '#ffffff';
-          NavigationBar.backgroundColorByHexString(navColor, !isDarkMode);
-        }
-      }
-    }
-
-    // Evento nativo de Cordova cargado con seguridad
-    document.addEventListener("deviceready", onDeviceReady, false);
-    function onDeviceReady() {
-      if (window.StatusBar) {
-        StatusBar.overlaysWebView(true); // Hace que la app se dibuje abajo de la barra de notificaciones
-        updateThemeColorMeta();
-      }
-    }
-
-    function loadThemeAndState() {
-      const savedEvents = localStorage.getItem('apk-events');
-      if (savedEvents) {
-        events = JSON.parse(savedEvents);
-      }
-
-      const savedCategories = localStorage.getItem('apk-categories');
-      if (savedCategories) {
-        categories = JSON.parse(savedCategories);
-      }
-
-      const savedCurrency = localStorage.getItem('apk-currency');
-      if (savedCurrency) {
-        selectedCurrency = savedCurrency;
-        const currencySel = document.getElementById('currency-selector');
-        if (currencySel) {
-          currencySel.value = selectedCurrency;
-        }
-      }
-
-      const savedDark = localStorage.getItem('apk-dark-mode');
-      isDarkMode = savedDark === 'true';
-      if (isDarkMode) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-      updateThemeIcons();
-      updateThemeColorMeta();
-
-      const savedTheme = localStorage.getItem('apk-theme');
-      setTheme(savedTheme || 'emerald');
-    }
-
-    function saveState() {
-      localStorage.setItem('apk-events', JSON.stringify(events));
-      localStorage.setItem('apk-categories', JSON.stringify(categories));
-    }
-
-    function setTheme(theme) {
-      currentTheme = theme;
-      document.body.setAttribute('data-theme', theme);
-      localStorage.setItem('apk-theme', theme);
-
-      const names = {
-        'emerald': 'Esmeralda',
-        'ocean': 'Océano',
-        'amethyst': 'Amatista',
-        'sunset': 'Atardecer',
-        'charcoal': 'Carbón'
-      };
-      const textName = document.getElementById('active-theme-name');
-      if (textName) textName.textContent = names[theme];
-
-      document.querySelectorAll('[title]').forEach(btn => {
-        if (btn.getAttribute('title').toLowerCase() === getColorTranslate(theme)) {
-          btn.classList.add('scale-125', 'ring-2', 'ring-slate-400', 'border-white');
-        } else {
-          btn.classList.remove('scale-125', 'ring-2', 'ring-slate-400', 'border-white');
-        }
-      });
-
-      renderAll();
-    }
-
-    function toggleDarkMode() {
-      isDarkMode = !isDarkMode;
-      if (isDarkMode) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-      localStorage.setItem('apk-dark-mode', isDarkMode);
-      updateThemeIcons();
-      updateThemeColorMeta();
-      renderAll();
-    }
-
-    function updateThemeIcons() {
-      const sun = document.getElementById('sun-icon');
-      const moon = document.getElementById('moon-icon');
-      if (isDarkMode) {
-        sun.classList.remove('hidden');
-        moon.classList.add('hidden');
-      } else {
-        sun.classList.add('hidden');
-        moon.classList.remove('hidden');
-      }
-    }
-
-    function changeCurrency(curr) {
-      selectedCurrency = curr;
-      localStorage.setItem('apk-currency', selectedCurrency);
-      renderAll();
-      showToast(`Moneda cambiada a: ${curr}`);
-    }
-
-    function populateCategories() {
-      const select = document.getElementById('event-category');
-      if (!select) return;
-      select.innerHTML = '';
-      categories.forEach(cat => {
-        const opt = document.createElement('option');
-        opt.value = cat;
-        opt.textContent = cat;
-        select.appendChild(opt);
-      });
-    }
-
-    function createNewCategory() {
-      const newCat = prompt("Ingresa el nombre de la nueva categoría:");
-      if (newCat && newCat.trim() !== '') {
-        const cleaned = newCat.trim();
-        if (!categories.includes(cleaned)) {
-          categories.push(cleaned);
-          saveState();
-          populateCategories();
-          document.getElementById('event-category').value = cleaned;
-          showToast(`Categoría "${cleaned}" agregada.`);
-        } else {
-          showToast(`La categoría ya existe.`);
-        }
-      }
-    }
-
-    function toggleFlowType(type) {
-      const labelMoney = document.getElementById('label-money');
-      const calcLabel = document.getElementById('calc-earnings-label');
-      const wrapper = document.getElementById('calc-earnings-wrapper');
-
-      if (type === 'income') {
-        labelMoney.textContent = "Ganancia por Día";
-        calcLabel.textContent = "Ganancia Total";
-        calcLabel.className = "block text-[8px] font-bold text-emerald-500 uppercase";
-        wrapper.className = "bg-white dark:bg-slate-900 p-1.5 rounded-lg border border-slate-100 dark:border-slate-850 ring-2 ring-emerald-500/20";
-        document.getElementById('calc-total-earnings').className = "font-black text-emerald-500";
-      } else {
-        labelMoney.textContent = "Gasto por Día";
-        calcLabel.textContent = "Gasto Total";
-        calcLabel.className = "block text-[8px] font-bold text-rose-500 uppercase";
-        wrapper.className = "bg-white dark:bg-slate-900 p-1.5 rounded-lg border border-slate-100 dark:border-slate-850 ring-2 ring-rose-500/20";
-        document.getElementById('calc-total-earnings').className = "font-black text-rose-500";
-      }
-      calculateRealtimeStats();
-    }
-
-    function selectEventColor(colorName, buttonElement) {
-      document.getElementById('event-color').value = colorName;
-      document.querySelectorAll('.color-dot').forEach(btn => {
-        btn.classList.remove('scale-110', 'ring-2', 'border-white');
-        btn.classList.add('hover:scale-105');
-      });
-      buttonElement.classList.remove('hover:scale-105');
-      buttonElement.classList.add('scale-110', 'ring-2', 'border-white');
-    }
-
-    function renderCalendar() {
-      const container = document.getElementById('calendar-days');
-      if (!container) return;
-      container.innerHTML = '';
-
-      const month = calendarDate.getMonth();
-      const year = calendarDate.getFullYear();
-
-      const monthsNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-      document.getElementById('calendar-month-year').textContent = `${monthsNames[month]} ${year}`;
-
-      const firstDayIndex = new Date(year, month, 1).getDay();
-      const lastDay = new Date(year, month + 1, 0).getDate();
-      const prevLastDay = new Date(year, month, 0).getDate();
-
-      for (let x = firstDayIndex; x > 0; x--) {
-        const div = document.createElement('div');
-        div.className = "h-10 flex items-center justify-center text-slate-300 dark:text-slate-700 text-[10px] select-none";
-        div.textContent = prevLastDay - x + 1;
-        container.appendChild(div);
-      }
-
-      for (let i = 1; i <= lastDay; i++) {
-        const currentDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-        const dayEvents = getEventsForDate(currentDateStr);
-        const hasEvents = dayEvents.length > 0;
-
-        const dayBtn = document.createElement('button');
-        dayBtn.type = 'button';
-        dayBtn.onclick = () => selectCalendarDay(currentDateStr);
-
-        let baseClasses = "h-11 w-full rounded-xl flex flex-col items-center justify-center text-xs font-bold transition-all relative group ";
-        
-        if (hasEvents) {
-          const mainEvent = dayEvents[0];
-          baseClasses += `${getColorClasses(mainEvent.color)} text-white shadow-sm`;
-
-          const tooltip = document.createElement('div');
-          tooltip.className = "absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:flex flex-col bg-slate-900 text-white text-[9px] rounded-lg p-2 shadow-xl z-50 w-44 pointer-events-none space-y-1";
-          let tooltipContent = `<strong class="text-theme-300 border-b border-slate-700 pb-1 mb-1 block">Agenda:</strong>`;
-          dayEvents.forEach(evt => {
-            const flowSymbol = evt.flow === 'income' ? '+' : '-';
-            tooltipContent += `
-              <div class="mt-0.5">
-                <p class="font-bold truncate text-white">${evt.desc}</p>
-                <p class="text-[8px] text-slate-300">${evt.startTime} a ${evt.endTime} | ${flowSymbol}${currencySymbols[selectedCurrency]}${evt.earnings.toFixed(1)}</p>
-              </div>
-            `;
-          });
-          tooltip.innerHTML = tooltipContent;
-          dayBtn.appendChild(tooltip);
-        } else {
-          baseClasses += "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900";
-        }
-
-        const today = new Date();
-        if (today.getDate() === i && today.getMonth() === month && today.getFullYear() === year) {
-          baseClasses += " ring-2 ring-amber-500 ring-offset-2 dark:ring-offset-slate-950";
-        }
-
-        dayBtn.className = baseClasses;
-
-        const dayNum = document.createElement('span');
-        dayNum.textContent = i;
-        dayBtn.appendChild(dayNum);
-
-        if (hasEvents) {
-          const incCount = dayEvents.filter(e => e.flow === 'income').length;
-          const expCount = dayEvents.filter(e => e.flow === 'expense').length;
-
-          const dotContainer = document.createElement('div');
-          dotContainer.className = "absolute bottom-1 flex gap-0.5 justify-center w-full";
-
-          if (incCount > 0) {
-            const dot = document.createElement('span');
-            dot.className = "w-1 h-1 rounded-full bg-emerald-200 border border-emerald-600";
-            dotContainer.appendChild(dot);
-          }
-          if (expCount > 0) {
-            const dot = document.createElement('span');
-            dot.className = "w-1 h-1 rounded-full bg-rose-200 border border-rose-600";
-            dotContainer.appendChild(dot);
-          }
-          dayBtn.appendChild(dotContainer);
-        }
-
-        container.appendChild(dayBtn);
-      }
-
-      const totalCells = firstDayIndex + lastDay;
-      const nextDays = 42 - totalCells;
-      for (let j = 1; j <= (nextDays < 7 ? nextDays : nextDays - 7); j++) {
-        const div = document.createElement('div');
-        div.className = "h-10 flex items-center justify-center text-slate-300 dark:text-slate-700 text-[10px] select-none";
-        div.textContent = j;
-        container.appendChild(div);
-      }
-    }
-
-    function prevMonth() {
-      calendarDate.setMonth(calendarDate.getMonth() - 1);
-      renderCalendar();
-    }
-
-    function nextMonth() {
-      calendarDate.setMonth(calendarDate.getMonth() + 1);
-      renderCalendar();
-    }
-
-    function getEventsForDate(dateStr) {
-      const targetTime = new Date(dateStr + "T00:00:00").getTime();
-      return events.filter(e => {
-        const start = new Date(e.startDate + "T00:00:00").getTime();
-        const end = new Date(e.endDate + "T00:00:00").getTime();
-        return targetTime >= start && targetTime <= end;
-      });
-    }
-
-    function selectCalendarDay(dateStr) {
-      document.getElementById('event-start-date').value = dateStr;
-      document.getElementById('event-end-date').value = dateStr;
-      calculateRealtimeStats();
-      showToast(`Fecha seleccionada: ${formatDateDisplay(dateStr)}`);
-      switchTab('add');
-    }
-
-    function calculateRealtimeStats() {
-      const startDateVal = document.getElementById('event-start-date').value;
-      const endDateVal = document.getElementById('event-end-date').value;
-      const startTimeVal = document.getElementById('event-start-time').value;
-      const endTimeVal = document.getElementById('event-end-time').value;
-      const earningsVal = parseFloat(document.getElementById('event-earnings').value) || 0;
-      const flow = document.querySelector('input[name="event-flow"]:checked').value;
-
-      const calcDays = document.getElementById('calc-days');
-      const calcHoursPerDay = document.getElementById('calc-hours-per-day');
-      const calcTotalHours = document.getElementById('calc-total-hours');
-      const calcTotalEarnings = document.getElementById('calc-total-earnings');
-      const calcError = document.getElementById('calc-error');
-
-      calcError.classList.add('hidden');
-
-      if (!startDateVal || !endDateVal || !startTimeVal || !endTimeVal) {
-        calcDays.textContent = "-";
-        calcHoursPerDay.textContent = "-";
-        calcTotalHours.textContent = "-";
-        calcTotalEarnings.textContent = "-";
-        return;
-      }
-
-      const start = new Date(startDateVal + "T00:00:00");
-      const end = new Date(endDateVal + "T00:00:00");
-      const timeDiff = end.getTime() - start.getTime();
-      const diffDays = Math.floor(timeDiff / (1000 * 60 * 60 * 24)) + 1;
-
-      if (diffDays <= 0) {
-        calcError.classList.remove('hidden');
-        calcDays.textContent = "Error";
-        calcHoursPerDay.textContent = "-";
-        calcTotalHours.textContent = "-";
-        calcTotalEarnings.textContent = "-";
-        return;
-      }
-
-      const [startH, startM] = startTimeVal.split(':').map(Number);
-      const [endH, endM] = endTimeVal.split(':').map(Number);
-      let totalMinutesPerDay = (endH * 60 + endM) - (startH * 60 + startM);
-
-      if (totalMinutesPerDay <= 0) {
-        calcError.classList.remove('hidden');
-        calcDays.textContent = "-";
-        calcHoursPerDay.textContent = "Error";
-        calcTotalHours.textContent = "-";
-        calcTotalEarnings.textContent = "-";
-        return;
-      }
-
-      const hoursPerDay = totalMinutesPerDay / 60;
-      const totalHours = diffDays * hoursPerDay;
-      const totalEarnings = diffDays * earningsVal;
-
-      calcDays.textContent = `${diffDays} d`;
-      calcHoursPerDay.textContent = `${hoursPerDay.toFixed(1)} h`;
-      calcTotalHours.textContent = `${totalHours.toFixed(1)} h`;
-      
-      const symbol = currencySymbols[selectedCurrency];
-      if (flow === 'income') {
-        calcTotalEarnings.textContent = `+ ${symbol}${totalEarnings.toFixed(2)}`;
-      } else {
-        calcTotalEarnings.textContent = `- ${symbol}${totalEarnings.toFixed(2)}`;
-      }
-
-      return {
-        days: diffDays,
-        hoursPerDay: hoursPerDay,
-        totalHours: totalHours,
-        totalEarnings: totalEarnings
-      };
-    }
-
-    function saveEvent(e) {
-      e.preventDefault();
-
-      const calcResults = calculateRealtimeStats();
-      if (!calcResults) {
-        showToast('Completa los campos lógicamente.', 'error');
-        return;
-      }
-
-      const id = document.getElementById('event-id').value;
-      const desc = document.getElementById('event-desc').value.trim();
-      const startDate = document.getElementById('event-start-date').value;
-      const endDate = document.getElementById('event-end-date').value;
-      const startTime = document.getElementById('event-start-time').value;
-      const endTime = document.getElementById('event-end-time').value;
-      const earnings = parseFloat(document.getElementById('event-earnings').value) || 0;
-      const flow = document.querySelector('input[name="event-flow"]:checked').value;
-      const category = document.getElementById('event-category').value;
-      const color = document.getElementById('event-color').value;
-
-      const eventData = {
-        id: id || 'evt-' + Date.now(),
-        desc,
-        startDate,
-        endDate,
-        startTime,
-        endTime,
-        earnings,
-        flow,
-        category,
-        color,
-        ...calcResults
-      };
-
-      if (id) {
-        const idx = events.findIndex(evt => evt.id === id);
-        if (idx !== -1) {
-          events[idx] = eventData;
-          showToast('Registro editado con éxito.');
-        }
-      } else {
-        events.push(eventData);
-        showToast('¡Registro guardado en la agenda!');
-      }
-
-      saveState();
-      resetForm();
-      renderAll();
-      switchTab('list');
-    }
-
-    function editEvent(id) {
-      const e = events.find(evt => evt.id === id);
-      if (!e) return;
-
-      document.getElementById('event-id').value = e.id;
-      document.getElementById('event-desc').value = e.desc;
-      document.getElementById('event-start-date').value = e.startDate;
-      document.getElementById('event-end-date').value = e.endDate;
-      document.getElementById('event-start-time').value = e.startTime;
-      document.getElementById('event-end-time').value = e.endTime;
-      document.getElementById('event-earnings').value = e.earnings;
-      
-      const flowRadios = document.querySelectorAll('input[name="event-flow"]');
-      flowRadios.forEach(r => {
-        r.checked = r.value === e.flow;
-      });
-      toggleFlowType(e.flow);
-
-      document.getElementById('event-category').value = e.category;
-      document.getElementById('event-color').value = e.color;
-
-      const targetDot = Array.from(document.querySelectorAll('.color-dot')).find(dot => dot.getAttribute('title').toLowerCase() === getColorTranslate(e.color));
-      if (targetDot) selectEventColor(e.color, targetDot);
-
-      document.getElementById('form-title').textContent = "Editar Registro";
-      document.getElementById('btn-submit-text').textContent = "Actualizar Registro";
-      document.getElementById('btn-cancel-edit').classList.remove('hidden');
-
-      switchTab('add');
-      calculateRealtimeStats();
-    }
-
-    function deleteEvent(id) {
-      events = events.filter(evt => evt.id !== id);
-      saveState();
-      renderAll();
-      showToast('Registro eliminado.');
-    }
-
-    function resetForm() {
-      document.getElementById('event-form').reset();
-      document.getElementById('event-id').value = '';
-      document.getElementById('form-title').textContent = "Nueva Entrada";
-      document.getElementById('btn-submit-text').textContent = "Guardar Actividad";
-      document.getElementById('btn-cancel-edit').classList.add('hidden');
-      
-      const emeraldDot = document.querySelector('.color-dot[title="Esmeralda"]');
-      if (emeraldDot) selectEventColor('emerald', emeraldDot);
-
-      toggleFlowType('income');
-    }
-
-    function clearAllEvents() {
-      if (confirm('¿Eliminar todos los registros de tu agenda?')) {
-        events = [];
-        saveState();
-        renderAll();
-        showToast('Agenda borrada por completo.');
-      }
-    }
-
-    function loadMockData() {
-      const mockEvents = [
-        {
-          id: 'mock-1',
-          desc: 'Capacitación Profesional Especializada',
-          startDate: '2026-06-27',
-          endDate: '2026-07-01',
-          startTime: '09:00',
-          endTime: '15:00',
-          earnings: 120.00,
-          flow: 'income',
-          category: 'Capacitación',
-          color: 'emerald',
-          days: 5,
-          hoursPerDay: 6,
-          totalHours: 30,
-          totalEarnings: 600.00
-        },
-        {
-          id: 'mock-2',
-          desc: 'Movilidad y Pasajes Diarios',
-          startDate: '2026-06-27',
-          endDate: '2026-07-01',
-          startTime: '08:00',
-          endTime: '08:45',
-          earnings: 15.00,
-          flow: 'expense',
-          category: 'Transporte',
-          color: 'rose',
-          days: 5,
-          hoursPerDay: 0.75,
-          totalHours: 3.75,
-          totalEarnings: 75.00
-        }
-      ];
-
-      events = mockEvents;
-      saveState();
-      calendarDate = new Date(2026, 5, 1);
-      renderAll();
-      switchTab('dashboard');
-      showToast('¡Datos de ejemplo de capacitación cargados!');
-    }
-
-    function renderAll() {
-      document.querySelectorAll('.currency-symbol').forEach(el => {
-        el.textContent = currencySymbols[selectedCurrency];
-      });
-
-      renderCalendar();
-      calculateGlobalStats();
-      renderEventsList();
-      populateCategories();
-    }
-
-    function calculateGlobalStats() {
-      let totalHours = 0;
-      let totalIncome = 0;
-      let totalExpenses = 0;
-      let totalDaysCovered = new Set();
-
-      events.forEach(e => {
-        totalHours += e.totalHours;
-        
-        let dateCursor = new Date(e.startDate + "T00:00:00");
-        const dateEnd = new Date(e.endDate + "T00:00:00");
-        while(dateCursor <= dateEnd) {
-          totalDaysCovered.add(dateCursor.toDateString());
-          dateCursor.setDate(dateCursor.getDate() + 1);
-        }
-
-        if (e.flow === 'income') {
-          totalIncome += e.totalEarnings;
-        } else {
-          totalExpenses += e.totalEarnings;
-        }
-      });
-
-      const balance = totalIncome - totalExpenses;
-      const symbol = currencySymbols[selectedCurrency];
-
-      const balanceCard = document.getElementById('stat-balance-card');
-      const balanceVal = document.getElementById('stat-balance-val');
-      const balanceIconContainer = document.getElementById('stat-balance-icon-container');
-      const balanceSubLabel = document.getElementById('stat-balance-sub-label');
-
-      if (balanceCard) {
-        const absBalance = Math.abs(balance).toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        const prefix = balance >= 0 ? '+' : '-';
-        
-        balanceVal.textContent = `${prefix} ${symbol}${absBalance}`;
-
-        if (balance >= 0) {
-          balanceCard.className = "bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-600 text-white p-5 rounded-2xl shadow-lg shadow-emerald-500/20 flex items-center justify-between transition-all duration-300";
-          balanceSubLabel.className = "text-[10px] font-extrabold uppercase tracking-widest text-emerald-100";
-          balanceIconContainer.innerHTML = '<i data-lucide="wallet" class="w-5 h-5"></i>';
-        } else {
-          balanceCard.className = "bg-gradient-to-br from-rose-500 via-red-600 to-rose-600 text-white p-5 rounded-2xl shadow-lg shadow-rose-500/20 flex items-center justify-between transition-all duration-300";
-          balanceSubLabel.className = "text-[10px] font-extrabold uppercase tracking-widest text-rose-100";
-          balanceIconContainer.innerHTML = '<i data-lucide="trending-down" class="w-5 h-5"></i>';
-        }
-      }
-
-      document.getElementById('stat-days-count').textContent = totalDaysCovered.size;
-      document.getElementById('stat-hours-count').textContent = totalHours.toFixed(1);
-      document.getElementById('stat-income-count').textContent = totalIncome.toLocaleString('es-PE', { minimumFractionDigits: 2 });
-      document.getElementById('stat-expenses-count').textContent = totalExpenses.toLocaleString('es-PE', { minimumFractionDigits: 2 });
-      
-      lucide.createIcons();
-    }
-
-    function renderEventsList() {
-      const mobileList = document.getElementById('events-mobile-list');
-      const emptyView = document.getElementById('no-events-view');
-      const searchQuery = document.getElementById('event-search').value.toLowerCase();
-
-      if (!mobileList) return;
-      mobileList.innerHTML = '';
-
-      const filtered = events.filter(e => 
-        e.desc.toLowerCase().includes(searchQuery) || 
-        e.category.toLowerCase().includes(searchQuery)
-      );
-
-      if (filtered.length === 0) {
-        emptyView.classList.remove('hidden');
-        return;
-      }
-      emptyView.classList.add('hidden');
-
-      filtered.sort((a,b) => new Date(b.startDate) - new Date(a.startDate));
-
-      const symbol = currencySymbols[selectedCurrency];
-
-      filtered.forEach(e => {
-        const textFlowClass = e.flow === 'income' ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-rose-600 dark:text-rose-400 font-bold';
-        const bgDot = getColorPresetHex(e.color);
-
-        const card = document.createElement('div');
-        card.className = "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-850 space-y-3 relative overflow-hidden shadow-xs";
-        card.innerHTML = `
-          <div class="absolute left-0 top-0 bottom-0 w-1.5" style="background-color: ${bgDot}"></div>
-
-          <div class="pl-2 flex justify-between items-start gap-2">
-            <div>
-              <h4 class="font-bold text-slate-900 dark:text-white text-xs leading-snug">${e.desc}</h4>
-              <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                <span class="text-[9px] font-black px-1.5 py-0.5 bg-slate-50 dark:bg-slate-955 text-slate-500 dark:text-slate-400 rounded-md shadow-xs border border-slate-100 dark:border-slate-800">${e.category}</span>
-                <span class="text-[9px] text-slate-400 font-bold">${formatDateDisplay(e.startDate)} al ${formatDateDisplay(e.endDate)}</span>
-              </div>
-            </div>
-            <div class="flex gap-1 shrink-0">
-              <button onclick="editEvent('${e.id}')" class="p-2 bg-slate-50 dark:bg-slate-955 text-slate-500 dark:text-slate-400 rounded-xl border border-slate-100 dark:border-slate-800">
-                <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
-              </button>
-              <button onclick="deleteEvent('${e.id}')" class="p-2 bg-slate-50 dark:bg-slate-955 text-rose-500 rounded-xl border border-slate-100 dark:border-slate-800">
-                <i data-lucide="trash" class="w-3.5 h-3.5"></i>
-              </button>
-            </div>
-          </div>
-
-          <div class="pl-2 grid grid-cols-2 gap-2 text-[10px] bg-slate-50 dark:bg-slate-955 p-2.5 rounded-xl border border-slate-100 dark:border-slate-850">
-            <div>
-              <span class="block text-slate-400 font-bold text-[8px] uppercase">Días Ocupados</span>
-              <span class="font-black text-slate-800 dark:text-slate-200">${e.days} d</span>
-            </div>
-            <div>
-              <span class="block text-slate-400 font-bold text-[8px] uppercase">Horas Diarias</span>
-              <span class="font-black text-slate-800 dark:text-slate-200">${e.hoursPerDay.toFixed(1)} h</span>
-            </div>
-            <div class="col-span-2 flex justify-between items-center border-t border-slate-100 dark:border-slate-800 pt-1.5 mt-1">
-              <span class="text-slate-400 font-bold text-[8px] uppercase">Tiempo Total:</span>
-              <span class="font-black text-theme-600 dark:text-theme-400">${e.totalHours.toFixed(1)} horas</span>
-            </div>
-          </div>
-
-          <div class="pl-2 flex justify-between items-center border-t border-slate-100 dark:border-slate-800 pt-2 text-[11px]">
-            <div>
-              <span class="block text-slate-400 font-bold text-[8px] uppercase">Cuota Diaria</span>
-              <span class="font-bold text-slate-600 dark:text-slate-400">${symbol}${e.earnings.toFixed(2)}</span>
-            </div>
-            <div class="text-right">
-              <span class="block text-slate-400 font-bold text-[8px] uppercase">Acumulado Neto</span>
-              <span class="${textFlowClass} text-xs font-black">
-                ${e.flow === 'income' ? '+' : '-'}${symbol}${e.totalEarnings.toFixed(2)}
-              </span>
-            </div>
-          </div>
-        `;
-        mobileList.appendChild(card);
-      });
-
-      lucide.createIcons();
-    }
-
-    function exportData() {
-      const dataStr = JSON.stringify({ events, categories });
-      const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-      const link = document.createElement('a');
-      link.setAttribute('href', dataUri);
-      link.setAttribute('download', 'agenda_inteligente_backup.json');
-      link.click();
-      showToast('Copia de respaldo guardada.');
-    }
-
-    function triggerImport() {
-      document.getElementById('import-file').click();
-    }
-
-    function importData(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const parsed = JSON.parse(e.target.result);
-          if (parsed.events && Array.isArray(parsed.events)) {
-            events = parsed.events;
-            if (parsed.categories && Array.isArray(parsed.categories)) {
-              categories = parsed.categories;
+    <!-- LOGICA EN JAVASCRIPT BLINDADO -->
+    <script>
+        // CONFIGURACIONES Y DATOS INICIALES POR DEFECTO
+        const DEFAULT_CARDS = [
+            { id: "card-1", name: "Tarjeta de Gastos", number: "3245", colorStart: "#6366f1", colorEnd: "#4f46e5", limit: 10000, bgImage: null },
+            { id: "card-2", name: "Fondo de Ahorros", number: "8829", colorStart: "#10b981", colorEnd: "#059669", limit: 5000, bgImage: null },
+            { id: "card-3", name: "Viajes & Placer", number: "1190", colorStart: "#ec4899", colorEnd: "#be185d", limit: 3000, bgImage: null }
+        ];
+
+        const DEFAULT_CATEGORIES = [
+            { id: "cat-taxi", name: "Taxi", icon: "car", color: "#3b82f6" },
+            { id: "cat-shopping", name: "Shopping", icon: "shopping-bag", color: "#ec4899" },
+            { id: "cat-coffee", name: "Coffee", icon: "coffee", color: "#f59e0b" },
+            { id: "cat-rest", name: "Comida", icon: "utensils", color: "#ef4444" },
+            { id: "cat-income", name: "Ingresos", icon: "dollar-sign", color: "#10b981" }
+        ];
+
+        const DEFAULT_TRANSACTIONS = [
+            { id: "tx-1", cardId: "card-1", type: "expense", title: "Uber Premium", amount: 43.87, category: "cat-taxi", date: "2026-06-25", tag: "Transporte" },
+            { id: "tx-2", cardId: "card-1", type: "expense", title: "Starbucks Cappuccino", amount: 12.50, category: "cat-coffee", date: "2026-06-24", tag: "Placer" },
+            { id: "tx-3", cardId: "card-1", type: "income", title: "Sueldo Mensual", amount: 3500.00, category: "cat-income", date: "2026-06-20", tag: "Trabajo" },
+            { id: "tx-4", cardId: "card-2", type: "income", title: "Inversión Plazo Fijo", amount: 250.00, category: "cat-income", date: "2026-06-18", tag: "Inversión" },
+            { id: "tx-5", cardId: "card-2", type: "expense", title: "Comisión Mensual", amount: 15.00, category: "cat-coffee", date: "2026-06-15", tag: "Banco" },
+            { id: "tx-6", cardId: "card-3", type: "expense", title: "Vuelo a Máncora", amount: 320.00, category: "cat-taxi", date: "2026-06-14", tag: "Vuelo" },
+            { id: "tx-7", cardId: "card-3", type: "income", title: "Bono Vacacional", amount: 800.00, category: "cat-income", date: "2026-06-12", tag: "Empresa" }
+        ];
+
+        const BG_THEMES = [
+            { id: "default", name: "Soft Blue", bg: "#f3f4f9", card: "#ffffff", cardRgb: "255,255,255", nested: "#f8fafc", text: "#11142d", textMuted: "#808191" },
+            { id: "dark-amoled", name: "Dark AMOLED", bg: "#000000", card: "#101012", cardRgb: "16,16,18", nested: "#1e1e24", text: "#f8fafc", textMuted: "#94a3b8" },
+            { id: "grey-dark", name: "Gris Premium", bg: "#0f172a", card: "#1e293b", cardRgb: "30,41,59", nested: "#2c364c", text: "#f8fafc", textMuted: "#cbd5e1" },
+            { id: "warm-cream", name: "Warm Cream", bg: "#fafaf6", card: "#ffffff", cardRgb: "255,255,255", nested: "#f5f5f0", text: "#2c2520", textMuted: "#8a8074" }
+        ];
+
+        let appState = {
+            cards: [],
+            activeCardId: "card-1",
+            transactions: [],
+            categories: [],
+            activeBgTheme: "default",
+            customBgColor: "",
+            statsFilter: "expense"
+        };
+
+        // CARGAR ESTADO PROTEGIDO CONTRA ERRORES
+        function loadState() {
+            try {
+                const saved = localStorage.getItem("gestor_gastos_state_v2");
+                if (saved) {
+                    appState = JSON.parse(saved);
+                    // Validar integridad de propiedades indispensables
+                    if (!appState.cards || appState.cards.length === 0) appState.cards = DEFAULT_CARDS;
+                    if (!appState.transactions) appState.transactions = DEFAULT_TRANSACTIONS;
+                    if (!appState.categories) appState.categories = DEFAULT_CATEGORIES;
+                    if (!appState.activeCardId) appState.activeCardId = appState.cards[0].id;
+                } else {
+                    resetToDefault();
+                }
+            } catch (e) {
+                console.warn("Falla de datos detectada. Reseteando al estado por defecto seguro.", e);
+                resetToDefault();
             }
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem("gestor_gastos_state_v2", JSON.stringify(appState));
+            } catch (e) {
+                console.error("Error al guardar estado:", e);
+            }
+        }
+
+        function resetToDefault() {
+            appState.cards = [...DEFAULT_CARDS];
+            appState.transactions = [...DEFAULT_TRANSACTIONS];
+            appState.categories = [...DEFAULT_CATEGORIES];
+            appState.activeCardId = "card-1";
+            appState.activeBgTheme = "default";
             saveState();
-            populateCategories();
-            renderAll();
-            switchTab('dashboard');
-            showToast('¡Respaldo cargado con éxito!');
-          } else {
-            showToast('Archivo no válido.', 'error');
-          }
-        } catch (err) {
-          showToast('Error al importar archivo.', 'error');
         }
-      };
-      reader.readAsText(file);
-    }
 
-    function renderCharts() {
-      const isDark = document.documentElement.classList.contains('dark');
-      const textColor = isDark ? '#94a3b8' : '#64748b';
-      const gridColor = isDark ? '#1e293b' : '#f1f5f9';
+        // CAMBIO DE PESTAÑA SEGURO
+        function changeTab(targetTab) {
+            try {
+                const dash = document.getElementById('screen-dashboard');
+                const stats = document.getElementById('screen-stats');
+                
+                const btnDash = document.getElementById('nav-dashboard');
+                const btnStats = document.getElementById('nav-stats');
 
-      const incomeTotal = events.filter(e => e.flow === 'income').reduce((sum, e) => sum + e.totalEarnings, 0);
-      const expenseTotal = events.filter(e => e.flow === 'expense').reduce((sum, e) => sum + e.totalEarnings, 0);
+                if (targetTab === 'dashboard') {
+                    dash.classList.remove('-translate-x-full', 'opacity-0');
+                    dash.classList.add('z-10');
+                    stats.classList.add('translate-x-full', 'opacity-0');
+                    stats.classList.remove('z-10');
 
-      const canvasBalance = document.getElementById('chart-balance');
-      if (canvasBalance) {
-        const ctxBalance = canvasBalance.getContext('2d');
-        if (chartBalanceInstance) chartBalanceInstance.destroy();
+                    btnDash.className = "flex flex-col items-center justify-center text-indigo-600 transition-colors";
+                    btnStats.className = "flex flex-col items-center justify-center custom-text-secondary transition-colors";
+                } else if (targetTab === 'stats') {
+                    dash.classList.add('-translate-x-full', 'opacity-0');
+                    dash.classList.remove('z-10');
+                    stats.classList.remove('translate-x-full', 'opacity-0');
+                    stats.classList.add('z-10');
 
-        chartBalanceInstance = new Chart(ctxBalance, {
-          type: 'doughnut',
-          data: {
-            labels: ['Ingresos', 'Gastos'],
-            datasets: [{
-              data: [incomeTotal, expenseTotal],
-              backgroundColor: ['#10b981', '#f43f5e'],
-              borderWidth: isDark ? 2 : 1,
-              borderColor: isDark ? '#0f172a' : '#ffffff'
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: 'bottom',
-                labels: { color: textColor, font: { size: 9, family: 'Inter' } }
-              }
+                    btnStats.className = "flex flex-col items-center justify-center text-indigo-600 transition-colors";
+                    btnDash.className = "flex flex-col items-center justify-center custom-text-secondary transition-colors";
+                    
+                    renderHistoryChart();
+                    renderStatsCategories();
+                }
+            } catch (e) {
+                console.error("Error al cambiar pestaña:", e);
             }
-          }
-        });
-      }
-
-      const categoryHours = {};
-      categories.forEach(cat => categoryHours[cat] = 0);
-      events.forEach(e => {
-        if (categoryHours[e.category] !== undefined) {
-          categoryHours[e.category] += e.totalHours;
-        } else {
-          categoryHours[e.category] = e.totalHours;
         }
-      });
 
-      const activeCategories = Object.keys(categoryHours).filter(cat => categoryHours[cat] > 0);
-      const activeHours = activeCategories.map(cat => categoryHours[cat]);
-
-      const canvasCategories = document.getElementById('chart-categories');
-      if (canvasCategories) {
-        const ctxCategories = canvasCategories.getContext('2d');
-        if (chartCategoriesInstance) chartCategoriesInstance.destroy();
-
-        chartCategoriesInstance = new Chart(ctxCategories, {
-          type: 'bar',
-          data: {
-            labels: activeCategories.length > 0 ? activeCategories : ['Sin Tiempos'],
-            datasets: [{
-              label: 'Horas',
-              data: activeHours.length > 0 ? activeHours : [0],
-              backgroundColor: '#6366f1',
-              borderRadius: 6
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { display: false }
-            },
-            scales: {
-              x: {
-                grid: { display: false },
-                ticks: { color: textColor, font: { size: 8 } }
-              },
-              y: {
-                grid: { color: gridColor },
-                ticks: { color: textColor, font: { size: 8 } }
-              }
+        function openSection(screenId) {
+            const screen = document.getElementById(`screen-${screenId}`);
+            if (screen) {
+                screen.classList.remove('translate-x-full', 'opacity-0');
+                screen.classList.add('z-40');
+                document.getElementById('main-content-flow').classList.add('blur-md', 'scale-[0.97]');
             }
-          }
-        });
-      }
-    }
+        }
 
-    function getColorClasses(colorName) {
-      switch (colorName) {
-        case 'sky': return 'bg-sky-500 shadow-sky-500/20';
-        case 'violet': return 'bg-violet-500 shadow-violet-500/20';
-        case 'rose': return 'bg-rose-500 shadow-rose-500/20';
-        case 'amber': return 'bg-amber-500 shadow-amber-500/20';
-        default: return 'bg-emerald-500 shadow-emerald-500/20';
-      }
-    }
+        function closeSection(screenId) {
+            const screen = document.getElementById(`screen-${screenId}`);
+            if (screen) {
+                screen.classList.add('translate-x-full', 'opacity-0');
+                screen.classList.remove('z-40');
+                document.getElementById('main-content-flow').classList.remove('blur-md', 'scale-[0.97]');
+            }
+        }
 
-    function getColorPresetHex(colorName) {
-      switch (colorName) {
-        case 'sky': return '#0ea5e9';
-        case 'violet': return '#8b5cf6';
-        case 'rose': return '#f43f5e';
-        case 'amber': return '#f59e0b';
-        default: return '#10b981';
-      }
-    }
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            if (!modal) return;
+            modal.classList.remove('pointer-events-none', 'opacity-0');
+            modal.children[0].classList.remove('translate-y-10');
+            document.getElementById('main-content-flow').classList.add('blur-sm');
+        }
 
-    function getColorTranslate(colorName) {
-      switch (colorName) {
-        case 'sky': return 'celeste';
-        case 'violet': return 'violeta';
-        case 'rose': return 'rosa';
-        case 'amber': return 'ámbar';
-        default: return 'esmeralda';
-      }
-    }
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            if (!modal) return;
+            modal.classList.add('pointer-events-none', 'opacity-0');
+            modal.children[0].classList.add('translate-y-10');
+            document.getElementById('main-content-flow').classList.remove('blur-sm');
+        }
 
-    function formatDateDisplay(dateStr) {
-      if (!dateStr) return '';
-      const [year, month, day] = dateStr.split('-');
-      return `${day}/${month}/${year}`;
-    }
+        // RENDER DE TARJETA ESTILO AMERICAN EXPRESS (image_33645d.png)
+        function renderCardSelector() {
+            try {
+                const activeCardContainer = document.getElementById('active-card-container');
+                const cardDotsContainer = document.getElementById('card-dots-container');
+                const activeCardTitle = document.getElementById('active-card-title');
 
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      const toastMessage = document.getElementById('toast-message');
-      if (!toast || !toastMessage) return;
-      
-      toastMessage.textContent = message;
-      toast.classList.remove('translate-y-[-180%]');
-      toast.classList.add('translate-y-0');
+                if (!activeCardContainer) return;
 
-      setTimeout(() => {
-        toast.classList.remove('translate-y-0');
-        toast.classList.add('translate-y-[-180%]');
-      }, 3000);
-    }
+                const activeCard = appState.cards.find(c => c.id === appState.activeCardId) || appState.cards[0];
+                appState.activeCardId = activeCard.id;
 
-    window.onload = function() {
-      loadThemeAndState();
-    }
-  </script>
+                activeCardTitle.innerText = activeCard.name;
+
+                const hasImg = !!activeCard.bgImage;
+
+                // Bordes: rounded-2xl (16px) si es imagen para look profesional y real de tarjeta de crédito
+                const roundnessClass = hasImg ? "rounded-2xl" : "rounded-3xl";
+                activeCardContainer.className = `flex-1 max-w-[290px] aspect-[1.65/1] ${roundnessClass} text-white relative overflow-hidden transition-all duration-300 shadow-lg card-slide-active`;
+
+                // Configurar fondo de tarjeta
+                if (hasImg) {
+                    activeCardContainer.style.background = `linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.2) 60%, rgba(0, 0, 0, 0.1) 100%), url(${activeCard.bgImage}) center center / cover no-repeat`;
+                    activeCardContainer.style.boxShadow = `0 15px 30px rgba(0, 0, 0, 0.25)`;
+                } else {
+                    activeCardContainer.style.background = `linear-gradient(135deg, ${activeCard.colorStart}, ${activeCard.colorEnd})`;
+                    activeCardContainer.style.boxShadow = `0 15px 30px rgba(${hexToRgb(activeCard.colorStart)}, 0.35)`;
+                }
+                
+                let cardIncome = 0;
+                let cardExpense = 0;
+                appState.transactions.filter(t => t.cardId === activeCard.id).forEach(tx => {
+                    if (tx.type === 'income') cardIncome += parseFloat(tx.amount);
+                    else cardExpense += parseFloat(tx.amount);
+                });
+                const cardBalance = cardIncome - cardExpense;
+                const formattedBalance = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'USD' }).format(cardBalance);
+
+                // Condicionar diseño interior de la tarjeta según presencia de imagen de fondo
+                if (hasImg) {
+                    // Al detectar imagen de fondo, se ocultan los números y el chip para look minimalista
+                    activeCardContainer.innerHTML = `
+                        <!-- Diseño Limpio sin chip ni bordes de recuadro pesados -->
+                        <div class="absolute bottom-5 left-5 right-5 z-10">
+                            <p class="text-[9px] font-bold tracking-wider opacity-90 uppercase text-slate-300 drop-shadow-[0_1.5px_3px_rgba(0,0,0,0.85)]">Balance de esta Cuenta</p>
+                            <h3 class="text-2xl font-black mt-1 tracking-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">${formattedBalance}</h3>
+                        </div>
+                    `;
+                } else {
+                    // Diseño original premium estándar para colores degradados
+                    activeCardContainer.innerHTML = `
+                        <div class="absolute top-0 right-0 w-28 h-28 bg-white/10 rounded-full -mr-8 -mt-8 blur-lg"></div>
+                        <div class="flex justify-between items-start p-5 pb-0 relative z-10">
+                            <span class="text-xs font-semibold tracking-widest opacity-80 drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]">•••• ${activeCard.number}</span>
+                            <div class="flex">
+                                <div class="w-5 h-5 rounded-full bg-white/35 backdrop-blur-sm z-10"></div>
+                                <div class="w-5 h-5 rounded-full bg-white/20 backdrop-blur-sm -ml-2.5"></div>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-5 left-5 right-5 z-10">
+                            <p class="text-[10px] font-medium tracking-wide opacity-75 uppercase drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]">Balance de esta Cuenta</p>
+                            <h3 class="text-2xl font-black mt-0.5 tracking-tight drop-shadow-[0_1px_3px_rgba(0,0,0,0.3)]">${formattedBalance}</h3>
+                        </div>
+                    `;
+                }
+
+                // Generar puntos indicadores
+                cardDotsContainer.innerHTML = '';
+                appState.cards.forEach(c => {
+                    const dot = document.createElement('span');
+                    if (c.id === activeCard.id) {
+                        dot.className = "w-5 h-1.5 rounded-full transition-all duration-300";
+                        dot.style.backgroundColor = activeCard.colorStart;
+                    } else {
+                        dot.className = "w-1.5 h-1.5 rounded-full bg-gray-300 transition-all duration-300";
+                    }
+                    cardDotsContainer.appendChild(dot);
+                });
+            } catch (e) {
+                console.error("Error al renderizar tarjeta:", e);
+            }
+        }
+
+        function navigateCard(direction) {
+            const currentIndex = appState.cards.findIndex(c => c.id === appState.activeCardId);
+            let newIndex = currentIndex + direction;
+
+            if (newIndex < 0) newIndex = appState.cards.length - 1;
+            if (newIndex >= appState.cards.length) newIndex = 0;
+
+            appState.activeCardId = appState.cards[newIndex].id;
+            
+            renderCardSelector();
+            renderTransactions();
+            renderStatsCategories();
+            renderHistoryChart();
+            updateBalances();
+        }
+
+        function updateBalances() {
+            try {
+                const activeCard = appState.cards.find(c => c.id === appState.activeCardId) || appState.cards[0];
+                
+                let cardIncome = 0;
+                let cardExpense = 0;
+
+                appState.transactions.filter(t => t.cardId === activeCard.id).forEach(tx => {
+                    if (tx.type === 'income') {
+                        cardIncome += parseFloat(tx.amount);
+                    } else {
+                        cardExpense += parseFloat(tx.amount);
+                    }
+                });
+
+                const netBalance = cardIncome - cardExpense;
+                const currencyFormatter = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'USD' });
+
+                document.getElementById('stats-total-balance').innerText = currencyFormatter.format(netBalance);
+                document.getElementById('stats-card-label').innerText = `Balance de "${activeCard.name}"`;
+
+                const limit = parseFloat(activeCard.limit) || 1;
+                const percentage = Math.min(Math.round((cardExpense / limit) * 100), 100);
+                
+                document.getElementById('credit-percent').innerText = `${percentage}%`;
+                document.getElementById('credit-limit-text').innerText = `${currencyFormatter.format(cardExpense)} de ${currencyFormatter.format(limit)}`;
+                
+                const progressCard = document.getElementById('budget-progress-card');
+                if (progressCard) {
+                    progressCard.style.background = `linear-gradient(135deg, ${activeCard.colorStart}, ${activeCard.colorEnd})`;
+                    progressCard.style.boxShadow = `0 10px 20px rgba(${hexToRgb(activeCard.colorStart)}, 0.25)`;
+                }
+
+                const ring = document.getElementById('credit-progress-ring');
+                if (ring) {
+                    const strokeDashOffset = 150 - (150 * percentage) / 100;
+                    ring.setAttribute('stroke-dashoffset', strokeDashOffset);
+                }
+            } catch (e) {
+                console.error("Error al actualizar balances:", e);
+            }
+        }
+
+        function renderHistoryChart() {
+            try {
+                const container = document.getElementById('chart-container');
+                if (!container) return;
+
+                const activeCard = appState.cards.find(c => c.id === appState.activeCardId) || appState.cards[0];
+                const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+                const currentMonthIndex = new Date().getMonth();
+                const period = parseInt(document.getElementById('chart-period').value);
+                
+                let activeMonths = [];
+                for (let i = period - 1; i >= 0; i--) {
+                    let m = currentMonthIndex - i;
+                    if (m < 0) m += 12;
+                    activeMonths.push({ index: m, label: months[m], total: 0 });
+                }
+
+                appState.transactions.filter(t => t.cardId === activeCard.id).forEach(tx => {
+                    const txDate = new Date(tx.date + 'T00:00:00');
+                    const txMonth = txDate.getMonth();
+                    
+                    if (tx.type === appState.statsFilter) {
+                        const match = activeMonths.find(am => am.index === txMonth);
+                        if (match) {
+                            match.total += parseFloat(tx.amount);
+                        }
+                    }
+                });
+
+                const maxAmount = Math.max(...activeMonths.map(am => am.total), 1);
+
+                const width = container.clientWidth || 340;
+                const height = 120;
+                const padding = 20;
+
+                const points = activeMonths.map((am, index) => {
+                    const x = padding + (index * (width - padding * 2)) / (activeMonths.length - 1);
+                    const y = height - padding - (am.total / maxAmount) * (height - padding * 2);
+                    return { x, y, label: am.label, total: am.total };
+                });
+
+                let pathD = `M ${points[0].x} ${points[0].y}`;
+                for (let i = 1; i < points.length; i++) {
+                    const cpX1 = points[i-1].x + (points[i].x - points[i-1].x) / 2;
+                    const cpY1 = points[i-1].y;
+                    const cpX2 = points[i-1].x + (points[i].x - points[i-1].x) / 2;
+                    const cpY2 = points[i].y;
+                    pathD += ` C ${cpX1} ${cpY1}, ${cpX2} ${cpY2}, ${points[i].x} ${points[i].y}`;
+                }
+
+                const fillD = `${pathD} L ${points[points.length-1].x} ${height - padding} L ${points[0].x} ${height - padding} Z`;
+                const maxPoint = points.reduce((prev, current) => (prev.total > current.total) ? prev : current);
+
+                let svgContent = `
+                    <svg viewBox="0 0 ${width} ${height}" class="w-full h-full overflow-visible">
+                        <defs>
+                            <linearGradient id="chart-grad-active" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="${activeCard.colorStart}" stop-opacity="0.3"/>
+                                <stop offset="100%" stop-color="${activeCard.colorStart}" stop-opacity="0.0"/>
+                            </linearGradient>
+                        </defs>
+                        <line x1="${padding}" y1="${padding}" x2="${width - padding}" y2="${padding}" stroke="rgba(128,128,128,0.1)" stroke-width="1" />
+                        <line x1="${padding}" y1="${(height)/2}" x2="${width - padding}" y2="${(height)/2}" stroke="rgba(128,128,128,0.1)" stroke-width="1" />
+                        <line x1="${padding}" y1="${height - padding}" x2="${width - padding}" y2="${height - padding}" stroke="rgba(128,128,128,0.15)" stroke-dasharray="3,3" stroke-width="1" />
+                        <path d="${fillD}" fill="url(#chart-grad-active)" />
+                        <path d="${pathD}" fill="none" stroke="${activeCard.colorStart}" stroke-width="3" stroke-linecap="round" />
+                        ${points.map(p => `
+                            <circle cx="${p.x}" cy="${p.y}" r="4" fill="white" stroke="${activeCard.colorStart}" stroke-width="2" />
+                        `).join('')}
+                        ${points.map(p => `
+                            <text x="${p.x}" y="${height - 4}" text-anchor="middle" font-size="9" fill="#94a3b8" font-weight="600">${p.label}</text>
+                        `).join('')}
+                        <g transform="translate(${maxPoint.x - 22}, ${maxPoint.y - 28})">
+                            <rect width="44" height="18" rx="6" fill="${activeCard.colorStart}" />
+                            <text x="22" y="12" text-anchor="middle" font-size="8" fill="white" font-weight="bold">$${Math.round(maxPoint.total)}</text>
+                        </g>
+                    </svg>
+                `;
+
+                container.innerHTML = svgContent;
+            } catch (e) {
+                console.error("Error al renderizar gráfico:", e);
+            }
+        }
+
+        function setStatsFilter(type) {
+            appState.statsFilter = type;
+            const tabSavings = document.getElementById('tab-savings');
+            const tabExpenses = document.getElementById('tab-expenses');
+
+            if (type === 'income') {
+                tabSavings.className = "flex-1 py-2.5 text-xs font-semibold rounded-xl text-center transition-all bg-white text-slate-800 shadow-sm";
+                tabExpenses.className = "flex-1 py-2.5 text-xs font-semibold rounded-xl text-center transition-all text-slate-500";
+            } else {
+                tabExpenses.className = "flex-1 py-2.5 text-xs font-semibold rounded-xl text-center transition-all bg-white text-slate-800 shadow-sm";
+                tabSavings.className = "flex-1 py-2.5 text-xs font-semibold rounded-xl text-center transition-all text-slate-500";
+            }
+
+            renderStatsCategories();
+            renderHistoryChart();
+        }
+
+        function renderTransactions() {
+            try {
+                const listContainer = document.getElementById('transactions-list');
+                if (!listContainer) return;
+
+                const searchQuery = document.getElementById('search-input').value.toLowerCase();
+                listContainer.innerHTML = '';
+
+                const filtered = appState.transactions.filter(tx => {
+                    const belongsToActiveCard = tx.cardId === appState.activeCardId;
+                    const matchTitle = tx.title.toLowerCase().includes(searchQuery);
+                    const matchTag = tx.tag && tx.tag.toLowerCase().includes(searchQuery);
+                    return belongsToActiveCard && (matchTitle || matchTag);
+                });
+
+                if (filtered.length === 0) {
+                    listContainer.innerHTML = `
+                        <div class="py-8 text-center custom-text-secondary text-xs">
+                            <i data-lucide="info" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+                            No hay transacciones en esta tarjeta.
+                        </div>
+                    `;
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                    return;
+                }
+
+                filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                filtered.forEach(tx => {
+                    const category = appState.categories.find(c => c.id === tx.category) || { name: 'Otro', icon: 'tag', color: '#64748b' };
+                    const isExpense = tx.type === 'expense';
+                    const sign = isExpense ? '-' : '+';
+                    const colorClass = isExpense ? 'text-rose-500' : 'text-emerald-500';
+
+                    const cardItem = document.createElement('div');
+                    cardItem.className = "flex items-center justify-between p-3 rounded-2xl bg-opacity-70 hover:bg-opacity-100 transition-all cursor-pointer group border";
+                    cardItem.style.backgroundColor = "var(--nested-bg)";
+                    cardItem.style.borderColor = "rgba(128,128,128,0.08)";
+                    cardItem.onclick = () => editTransaction(tx.id);
+                    
+                    cardItem.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold" style="background-color: ${category.color}15; color: ${category.color}">
+                                <i data-lucide="${category.icon}" class="w-4.5 h-4.5"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold custom-text-primary flex items-center gap-1.5">
+                                    ${tx.title}
+                                    ${tx.tag ? `<span class="bg-indigo-50 text-indigo-600 text-[8px] px-1.5 py-0.5 rounded-md font-semibold">${tx.tag}</span>` : ''}
+                                </h4>
+                                <p class="text-[9px] custom-text-secondary font-medium">${formatDateString(tx.date)}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-bold ${colorClass}">${sign} $${parseFloat(tx.amount).toFixed(2)}</span>
+                            <div class="flex gap-1.5 justify-end opacity-0 group-hover:opacity-100 transition-opacity mt-0.5">
+                                <button onclick="event.stopPropagation(); deleteTransaction('${tx.id}')" class="text-rose-500 hover:text-rose-700 text-[9px] font-semibold">Eliminar</button>
+                            </div>
+                        </div>
+                    `;
+                    listContainer.appendChild(cardItem);
+                });
+
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            } catch (e) {
+                console.error("Error al renderizar transacciones:", e);
+            }
+        }
+
+        function renderStatsCategories() {
+            try {
+                const grid = document.getElementById('categories-grid');
+                if (!grid) return;
+                grid.innerHTML = '';
+
+                appState.categories.forEach(cat => {
+                    let catTotal = 0;
+                    appState.transactions.filter(t => t.cardId === appState.activeCardId).forEach(tx => {
+                        if (tx.category === cat.id && tx.type === appState.statsFilter) {
+                            catTotal += parseFloat(tx.amount);
+                        }
+                    });
+
+                    if (catTotal >= 0) {
+                        const card = document.createElement('div');
+                        card.className = "custom-card-bg p-4 rounded-3xl shadow-soft flex flex-col justify-between aspect-square transition-transform hover:scale-105 border";
+                        card.style.borderColor = "rgba(128,128,128,0.1)";
+                        card.innerHTML = `
+                            <div class="flex justify-between items-start">
+                                <div class="w-9 h-9 rounded-full flex items-center justify-center" style="background-color: ${cat.color}20; color: ${cat.color}">
+                                    <i data-lucide="${cat.icon}" class="w-4.5 h-4.5"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <p class="text-[10px] custom-text-secondary font-semibold">${cat.name}</p>
+                                <h4 class="text-base font-extrabold custom-text-primary mt-0.5">$${catTotal.toFixed(2)}</h4>
+                            </div>
+                        `;
+                        grid.appendChild(card);
+                    }
+                });
+
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            } catch (e) {
+                console.error("Error al renderizar categorías de estadísticas:", e);
+            }
+        }
+
+        function renderCategories() {
+            try {
+                const settingsList = document.getElementById('settings-categories-list');
+                const selectTx = document.getElementById('tx-category');
+                
+                if (settingsList) settingsList.innerHTML = '';
+                if (selectTx) selectTx.innerHTML = '';
+
+                appState.categories.forEach(cat => {
+                    if (selectTx) {
+                        const opt = document.createElement('option');
+                        opt.value = cat.id;
+                        opt.innerText = cat.name;
+                        selectTx.appendChild(opt);
+                    }
+
+                    if (settingsList) {
+                        const item = document.createElement('div');
+                        item.className = "flex items-center justify-between p-3 rounded-2xl custom-card-bg border shadow-sm";
+                        item.style.borderColor = "rgba(128,128,128,0.1)";
+                        item.innerHTML = `
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center" style="background-color: ${cat.color}; color: white">
+                                    <i data-lucide="${cat.icon}" class="w-4 h-4"></i>
+                                </div>
+                                <span class="text-xs font-bold custom-text-primary">${cat.name}</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="editCategory('${cat.id}')" class="p-1 custom-text-secondary hover:text-indigo-600">
+                                    <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="deleteCategory('${cat.id}')" class="p-1 custom-text-secondary hover:text-rose-500">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        `;
+                        settingsList.appendChild(item);
+                    }
+                });
+
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            } catch (e) {
+                console.error("Error al renderizar categorías generales:", e);
+            }
+        }
+
+        function openAddCardModal() {
+            document.getElementById('card-form-id').value = '';
+            document.getElementById('card-form').reset();
+            clearCardImagePreview();
+            document.getElementById('card-modal-title').innerText = "Añadir Tarjeta / Presupuesto";
+            openModal('modal-card');
+        }
+
+        let tempUploadedCardImage = null;
+
+        function handleCardImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const max_width = 480; 
+                    const scale = max_width / img.width;
+                    
+                    canvas.width = max_width;
+                    canvas.height = img.height * scale;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    const base64 = canvas.toDataURL('image/jpeg', 0.75);
+                    tempUploadedCardImage = base64;
+
+                    const previewImg = document.getElementById('card-image-preview');
+                    const previewContainer = document.getElementById('card-image-preview-container');
+                    const clearBtn = document.getElementById('btn-clear-card-image');
+                    
+                    previewImg.src = base64;
+                    previewContainer.classList.remove('hidden');
+                    clearBtn.classList.remove('hidden');
+                    document.getElementById('card-image-label').innerText = "Imagen cargada";
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearCardImagePreview() {
+            tempUploadedCardImage = null;
+            document.getElementById('card-form-image').value = '';
+            document.getElementById('card-image-preview-container').classList.add('hidden');
+            document.getElementById('btn-clear-card-image').classList.add('hidden');
+            document.getElementById('card-image-label').innerText = "Subir de PC";
+        }
+
+        function saveCard(e) {
+            e.preventDefault();
+
+            const cardId = document.getElementById('card-form-id').value;
+            const name = document.getElementById('card-form-name').value;
+            const number = document.getElementById('card-form-number').value;
+            const limit = parseFloat(document.getElementById('card-form-limit').value);
+            const colorStart = document.getElementById('card-form-color-start').value;
+            const colorEnd = document.getElementById('card-form-color-end').value;
+            const bgImage = tempUploadedCardImage;
+
+            if (cardId) {
+                const index = appState.cards.findIndex(c => c.id === cardId);
+                if (index !== -1) {
+                    appState.cards[index] = { id: cardId, name, number, limit, colorStart, colorEnd, bgImage };
+                }
+                showToast("Tarjeta actualizada");
+            } else {
+                const newCard = {
+                    id: 'card-' + Date.now(),
+                    name, number, limit, colorStart, colorEnd, bgImage
+                };
+                appState.cards.push(newCard);
+                appState.activeCardId = newCard.id;
+                showToast("Nueva tarjeta creada");
+            }
+
+            tempUploadedCardImage = null;
+            saveState();
+            closeModal('modal-card');
+            renderCardSelector();
+            renderSettingsCards();
+            updateBalances();
+            renderTransactions();
+            renderHistoryChart();
+        }
+
+        function editCard(id) {
+            const card = appState.cards.find(c => c.id === id);
+            if (!card) return;
+
+            document.getElementById('card-form-id').value = card.id;
+            document.getElementById('card-form-name').value = card.name;
+            document.getElementById('card-form-number').value = card.number;
+            document.getElementById('card-form-limit').value = card.limit;
+            document.getElementById('card-form-color-start').value = card.colorStart;
+            document.getElementById('card-form-color-end').value = card.colorEnd;
+
+            if (card.bgImage) {
+                tempUploadedCardImage = card.bgImage;
+                const previewImg = document.getElementById('card-image-preview');
+                const previewContainer = document.getElementById('card-image-preview-container');
+                const clearBtn = document.getElementById('btn-clear-card-image');
+                
+                previewImg.src = card.bgImage;
+                previewContainer.classList.remove('hidden');
+                clearBtn.classList.remove('hidden');
+                document.getElementById('card-image-label').innerText = "Imagen cargada";
+            } else {
+                clearCardImagePreview();
+            }
+
+            document.getElementById('card-modal-title').innerText = "Editar Tarjeta / Presupuesto";
+            openModal('modal-card');
+        }
+
+        function deleteCard(id) {
+            if (appState.cards.length <= 1) {
+                showToast("Debes tener al menos una tarjeta");
+                return;
+            }
+            appState.cards = appState.cards.filter(c => c.id !== id);
+            appState.transactions = appState.transactions.filter(t => t.cardId !== id);
+            
+            if (appState.activeCardId === id) {
+                appState.activeCardId = appState.cards[0].id;
+            }
+
+            saveState();
+            renderCardSelector();
+            renderSettingsCards();
+            updateBalances();
+            renderTransactions();
+            renderHistoryChart();
+            showToast("Tarjeta eliminada");
+        }
+
+        function renderSettingsCards() {
+            try {
+                const list = document.getElementById('settings-cards-list');
+                const selectTxCard = document.getElementById('tx-card');
+                if (!list) return;
+
+                list.innerHTML = '';
+                if (selectTxCard) selectTxCard.innerHTML = '';
+
+                appState.cards.forEach(card => {
+                    if (selectTxCard) {
+                        const opt = document.createElement('option');
+                        opt.value = card.id;
+                        opt.innerText = `${card.name} (•••• ${card.number})`;
+                        selectTxCard.appendChild(opt);
+                    }
+
+                    const previewRoundness = card.bgImage ? "rounded-md" : "rounded-lg";
+                    const cardBgStyle = card.bgImage 
+                        ? `background: url(${card.bgImage}) center/cover no-repeat` 
+                        : `background: linear-gradient(135deg, ${card.colorStart}, ${card.colorEnd})`;
+
+                    const item = document.createElement('div');
+                    item.className = "flex items-center justify-between p-3 rounded-2xl custom-card-bg border shadow-sm";
+                    item.style.borderColor = "rgba(128,128,128,0.1)";
+                    item.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-7 ${previewRoundness} flex items-center justify-center text-[10px] font-bold text-white shadow-sm overflow-hidden" style="${cardBgStyle}">
+                                ${card.number}
+                            </div>
+                            <div>
+                                <span class="text-xs font-bold custom-text-primary block">${card.name}</span>
+                                <span class="text-[9px] custom-text-secondary">Presupuesto: $${card.limit}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="editCard('${card.id}')" class="p-1 custom-text-secondary hover:text-indigo-600">
+                                <i data-lucide="edit-3" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="deleteCard('${card.id}')" class="p-1 custom-text-secondary hover:text-rose-500">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    `;
+                    list.appendChild(item);
+                });
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            } catch (e) {
+                console.error("Error al renderizar tarjetas en ajustes:", e);
+            }
+        }
+
+        function openAddTransactionModal(forceType = 'expense') {
+            document.getElementById('tx-id').value = '';
+            document.getElementById('transaction-form').reset();
+            document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('modal-title').innerText = forceType === 'transfer' ? "Nueva Transferencia" : "Nueva Transacción";
+            
+            renderSettingsCards();
+            document.getElementById('tx-card').value = appState.activeCardId;
+
+            setFormType(forceType);
+            openModal('modal-transaction');
+        }
+
+        function setFormType(type) {
+            const btnExpense = document.getElementById('form-type-expense');
+            const btnIncome = document.getElementById('form-type-income');
+
+            if (type === 'expense' || type === 'transfer') {
+                btnExpense.className = "flex-1 py-1.5 text-xs font-semibold rounded-lg text-center bg-white text-slate-800 shadow-sm";
+                btnIncome.className = "flex-1 py-1.5 text-xs font-semibold rounded-lg text-center text-slate-500";
+                document.getElementById('tx-category').value = appState.categories[0]?.id || '';
+            } else {
+                btnIncome.className = "flex-1 py-1.5 text-xs font-semibold rounded-lg text-center bg-white text-slate-800 shadow-sm";
+                btnExpense.className = "flex-1 py-1.5 text-xs font-semibold rounded-lg text-center text-slate-500";
+                const incCat = appState.categories.find(c => c.id === 'cat-income' || c.name.toLowerCase().includes('ingres'));
+                if (incCat) document.getElementById('tx-category').value = incCat.id;
+            }
+            btnExpense.dataset.type = type;
+        }
+
+        function saveTransaction(e) {
+            e.preventDefault();
+
+            const txId = document.getElementById('tx-id').value;
+            const amount = parseFloat(document.getElementById('tx-amount').value);
+            const cardId = document.getElementById('tx-card').value;
+            const category = document.getElementById('tx-category').value;
+            const title = document.getElementById('tx-title').value;
+            const date = document.getElementById('tx-date').value;
+            const tag = document.getElementById('tx-tag').value;
+            const type = document.getElementById('form-type-expense').dataset.type || 'expense';
+
+            if (txId) {
+                const index = appState.transactions.findIndex(t => t.id === txId);
+                if (index !== -1) {
+                    appState.transactions[index] = { id: txId, cardId, type, amount, category, title, date, tag };
+                }
+                showToast("Transacción actualizada");
+            } else {
+                const newTx = {
+                    id: 'tx-' + Date.now(),
+                    cardId, type, amount, category, title, date, tag
+                };
+                appState.transactions.push(newTx);
+                showToast("Transacción añadida");
+            }
+
+            saveState();
+            closeModal('modal-transaction');
+            renderTransactions();
+            renderStatsCategories();
+            renderHistoryChart();
+            updateBalances();
+            renderCardSelector();
+        }
+
+        function editTransaction(id) {
+            const tx = appState.transactions.find(t => t.id === id);
+            if (!tx) return;
+
+            renderSettingsCards();
+
+            document.getElementById('tx-id').value = tx.id;
+            document.getElementById('tx-amount').value = tx.amount;
+            document.getElementById('tx-title').value = tx.title;
+            document.getElementById('tx-date').value = tx.date;
+            document.getElementById('tx-tag').value = tx.tag || '';
+            document.getElementById('tx-card').value = tx.cardId;
+            
+            document.getElementById('modal-title').innerText = tx.type === 'transfer' ? "Editar Transferencia" : "Editar Transacción";
+            setFormType(tx.type);
+            document.getElementById('tx-category').value = tx.category;
+
+            openModal('modal-transaction');
+        }
+
+        function deleteTransaction(id) {
+            appState.transactions = appState.transactions.filter(t => t.id !== id);
+            saveState();
+            renderTransactions();
+            renderStatsCategories();
+            renderHistoryChart();
+            updateBalances();
+            renderCardSelector();
+            showToast("Transacción eliminada");
+        }
+
+        function openAddCategoryModal() {
+            document.getElementById('cat-id').value = '';
+            document.getElementById('category-form').reset();
+            document.getElementById('cat-modal-title').innerText = "Nueva Categoría";
+            renderCategoryColors();
+            openModal('modal-category');
+        }
+
+        function renderCategoryColors() {
+            const palette = document.getElementById('cat-colors-palette');
+            const colors = ["#3b82f6", "#ec4899", "#f59e0b", "#ef4444", "#10b981", "#8b5cf6", "#06b6d4"];
+            palette.innerHTML = '';
+            
+            colors.forEach(c => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = "w-7 h-7 rounded-full border-2 border-transparent hover:scale-110 active:scale-95 transition-all";
+                btn.style.backgroundColor = c;
+                btn.onclick = () => {
+                    document.getElementById('cat-custom-color').value = c;
+                    Array.from(palette.children).forEach(child => child.style.borderColor = 'transparent');
+                    btn.style.borderColor = '#000000';
+                };
+                palette.appendChild(btn);
+            });
+        }
+
+        function saveCategory(event) {
+            event.preventDefault();
+
+            const catId = document.getElementById('cat-id').value;
+            const name = document.getElementById('cat-name').value;
+            const color = document.getElementById('cat-custom-color').value;
+            const icon = document.getElementById('cat-icon').value;
+
+            if (catId) {
+                const index = appState.categories.findIndex(c => c.id === catId);
+                if (index !== -1) {
+                    appState.categories[index] = { id: catId, name, color, icon };
+                }
+                showToast("Categoría actualizada");
+            } else {
+                const newCat = {
+                    id: 'cat-' + Date.now(),
+                    name, color, icon
+                };
+                appState.categories.push(newCat);
+                showToast("Categoría creada");
+            }
+
+            saveState();
+            closeModal('modal-category');
+            renderCategories();
+            renderStatsCategories();
+            renderTransactions();
+        }
+
+        function editCategory(id) {
+            const cat = appState.categories.find(c => c.id === id);
+            if (!cat) return;
+
+            document.getElementById('cat-id').value = cat.id;
+            document.getElementById('cat-name').value = cat.name;
+            document.getElementById('cat-custom-color').value = cat.color;
+            document.getElementById('cat-icon').value = cat.icon;
+
+            document.getElementById('cat-modal-title').innerText = "Editar Categoría";
+            renderCategoryColors();
+            openModal('modal-category');
+        }
+
+        function deleteCategory(id) {
+            if (appState.categories.length <= 1) {
+                showToast("Debe existir al menos una categoría");
+                return;
+            }
+            appState.categories = appState.categories.filter(c => c.id !== id);
+            saveState();
+            renderCategories();
+            renderStatsCategories();
+            renderTransactions();
+            showToast("Categoría eliminada");
+        }
+
+        function renderBgSelectors() {
+            const grid = document.getElementById('bg-selector-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            BG_THEMES.forEach(t => {
+                const btn = document.createElement('button');
+                btn.className = "p-2.5 rounded-xl border text-[9px] font-bold text-center flex flex-col items-center gap-1.5 active:scale-95 transition-all shadow-sm";
+                btn.style.backgroundColor = t.bg;
+                btn.style.color = t.text;
+                btn.style.borderColor = appState.activeBgTheme === t.id ? '#6366f1' : 'rgba(128,128,128,0.15)';
+                btn.onclick = () => {
+                    appState.activeBgTheme = t.id;
+                    appState.customBgColor = '';
+                    applyTheme();
+                    saveState();
+                    renderBgSelectors();
+                };
+                btn.innerHTML = `
+                    <div class="w-4 h-4 rounded-full border" style="background-color: ${t.card}; border-color: rgba(128,128,128,0.2);"></div>
+                    <span>${t.name}</span>
+                `;
+                grid.appendChild(btn);
+            });
+        }
+
+        function setCustomAppBg(color) {
+            appState.activeBgTheme = 'custom';
+            appState.customBgColor = color;
+            applyTheme();
+            saveState();
+            renderBgSelectors();
+        }
+
+        // MOTOR DE APLICACIÓN DE TEMAS UNIFICADO (LIGHT / DARK SÍNCRONO)
+        function applyTheme() {
+            try {
+                let activeBg = '#f3f4f9';
+                let activeCard = '#ffffff';
+                let activeCardRgb = '255,255,255';
+                let activeNested = '#f8fafc';
+                let activeText = '#11142d';
+                let activeTextMuted = '#808191';
+
+                if (appState.activeBgTheme === 'custom' && appState.customBgColor) {
+                    activeBg = appState.customBgColor;
+                    const isDark = isColorDark(activeBg);
+                    activeCard = isDark ? '#101012' : '#ffffff';
+                    activeCardRgb = isDark ? '16,16,18' : '255,255,255';
+                    activeNested = isDark ? '#1e1e24' : '#f8fafc';
+                    activeText = isDark ? '#f8fafc' : '#11142d';
+                    activeTextMuted = isDark ? '#94a3b8' : '#808191';
+                } else {
+                    const theme = BG_THEMES.find(t => t.id === appState.activeBgTheme) || BG_THEMES[0];
+                    activeBg = theme.bg;
+                    activeCard = theme.card;
+                    activeCardRgb = theme.cardRgb;
+                    activeNested = theme.nested;
+                    activeText = theme.text;
+                    activeTextMuted = theme.textMuted;
+                }
+
+                // Inyectar de inmediato en propiedades CSS globales
+                document.documentElement.style.setProperty('--app-bg', activeBg);
+                document.documentElement.style.setProperty('--card-bg', activeCard);
+                document.documentElement.style.setProperty('--card-bg-rgb', activeCardRgb);
+                document.documentElement.style.setProperty('--nested-bg', activeNested);
+                document.documentElement.style.setProperty('--text-primary', activeText);
+                document.documentElement.style.setProperty('--text-secondary', activeTextMuted);
+
+                renderSettingsCards();
+            } catch (e) {
+                console.error("Error al aplicar tema:", e);
+            }
+        }
+
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `finanzas_backup_${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            showToast("Copia de seguridad descargada");
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedState = JSON.parse(e.target.result);
+                    if (importedState.transactions && importedState.categories && importedState.cards) {
+                        appState = importedState;
+                        saveState();
+                        
+                        renderBgSelectors();
+                        applyTheme();
+                        renderCardSelector();
+                        renderTransactions();
+                        renderCategories();
+                        renderStatsCategories();
+                        renderHistoryChart();
+                        updateBalances();
+                        
+                        showToast("Copia de seguridad restaurada con éxito");
+                        closeSection('settings');
+                    } else {
+                        showToast("El archivo JSON no es compatible");
+                    }
+                } catch(error) {
+                    showToast("Error al leer el archivo JSON");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function formatDateString(dateStr) {
+            const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            const date = new Date(dateStr + 'T00:00:00');
+            return `${date.getDate()} ${months[date.getMonth()]}, ${date.getFullYear()}`;
+        }
+
+        function isColorDark(color) {
+            const hex = color.replace('#', '');
+            const r = parseInt(hex.substr(0, 2), 16);
+            const g = parseInt(hex.substr(2, 2), 16);
+            const b = parseInt(hex.substr(4, 2), 16);
+            const brightness = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+            return brightness < 140;
+        }
+
+        function hexToRgb(hex) {
+            const c = hex.replace('#', '');
+            const r = parseInt(c.substr(0, 2), 16);
+            const g = parseInt(c.substr(2, 2), 16);
+            const b = parseInt(c.substr(4, 2), 16);
+            return `${r}, ${g}, ${b}`;
+        }
+
+        function showToast(text) {
+            const toast = document.getElementById('toast-message');
+            const toastText = document.getElementById('toast-text');
+            if (!toast) return;
+
+            toastText.innerText = text;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            toast.classList.add('opacity-100');
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'pointer-events-none');
+                toast.classList.remove('opacity-100');
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
