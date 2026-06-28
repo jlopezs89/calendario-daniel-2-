@@ -29,18 +29,19 @@ jobs:
     - name: Instalar Cordova
       run: npm install -g cordova
 
-    - name: Instalar Dependencias del Proyecto
-      run: npm install
-
-    - name: Añadir Plataforma Android
-      run: cordova platform add android
-
-    - name: Compilar APK (Modo Debug)
-      run: cordova build android --device
+    - name: Crear Estructura Temporal de Cordova
+      run: |
+        mkdir cordova_build
+        mv css img js index.html config.xml cordova_build/
+        cd cordova_build
+        mkdir www
+        mv css img js index.html www/
+        cordova platform add android --nosave
+        cordova build android --device
+        mv platforms/android/app/build/outputs/apk/debug/app-debug.apk ../app-debug.apk
 
     - name: Guardar el archivo APK listo
       uses: actions/upload-artifact@v4
       with:
         name: mi-app-apk
-        path: platforms/android/app/build/outputs/apk/debug/app-debug.apk
-      
+        path: app-debug.apk
