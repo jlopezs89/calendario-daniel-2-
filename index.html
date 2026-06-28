@@ -2,7 +2,7 @@
 <html lang="es" class="h-full select-none">
 <head>
   <meta charset="UTF-8">
-  <!-- Meta especial para comportamiento de App Nativa en APK/WebIntoApp -->
+  <!-- Meta especial para comportamiento de App Nativa en APK/Cordova -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -91,12 +91,33 @@
     }
 
     /* Estilos para comportamiento de Aplicación APK Nativa */
+    html, body {
+      background-color: #f8fafc; /* Color de fondo por defecto */
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    
+    .dark html, .dark body {
+      background-color: #020617; /* Fondo en modo oscuro */
+    }
+
     body {
       -webkit-touch-callout: none;
       -webkit-user-select: none;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
       overscroll-behavior-y: contain; /* Evita recarga por arrastre en navegadores móviles */
+    }
+
+    /* Soporte de pantalla de teléfono inmersiva (Muescas, Notch y barra de botones) */
+    .pt-safe {
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+    .pb-safe {
+      padding-bottom: env(safe-area-inset-bottom, 0px);
     }
 
     /* Permitir selección únicamente en entradas de formulario */
@@ -129,8 +150,7 @@
     <!-- PESTAÑA 1: INICIO (DASHBOARD & GRÁFICOS) -->
     <div id="view-dashboard" class="view-panel p-4 space-y-4">
       
-      <!-- Balance Vistoso (Móvil prioritario) -->
-      <!-- Corregido el problema de la doble moneda y eliminado el rectángulo vacío de abajo -->
+      <!-- Balance General Dinámico -->
       <div id="stat-balance-card" class="p-5 rounded-2xl flex items-center justify-between transition-all duration-300">
         <div class="space-y-1">
           <p id="stat-balance-sub-label" class="text-[10px] font-black uppercase tracking-wider text-white/90">Mi Balance General</p>
@@ -274,18 +294,18 @@
           <!-- Descripción -->
           <div>
             <label class="block text-[10px] font-black text-slate-400 dark:text-slate-500 tracking-widest mb-1">Descripción</label>
-            <input type="text" id="event-desc" required placeholder="Ej. Capacitación técnica, Pasajes en bus, Almuerzo..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 focus:border-theme-500 focus:ring-2 focus:ring-theme-500/10 rounded-xl px-3.5 py-2.5 text-xs outline-none text-slate-800 dark:text-slate-100">
+            <input type="text" id="event-desc" required placeholder="Ej. Capacitación técnica, Pasajes en bus, Almuerzo..." class="w-full bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-850 focus:border-theme-500 focus:ring-2 focus:ring-theme-500/10 rounded-xl px-3.5 py-2.5 text-xs outline-none text-slate-800 dark:text-slate-100">
           </div>
 
           <!-- Fechas -->
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Desde</label>
-              <input type="date" id="event-start-date" required oninput="calculateRealtimeStats()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 focus:border-theme-500 rounded-xl px-3 py-2 text-xs outline-none text-slate-800 dark:text-slate-100">
+              <input type="date" id="event-start-date" required oninput="calculateRealtimeStats()" class="w-full bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-850 focus:border-theme-500 rounded-xl px-3 py-2 text-xs outline-none text-slate-800 dark:text-slate-100">
             </div>
             <div>
               <label class="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Hasta</label>
-              <input type="date" id="event-end-date" required oninput="calculateRealtimeStats()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 focus:border-theme-500 rounded-xl px-3 py-2 text-xs outline-none text-slate-800 dark:text-slate-100">
+              <input type="date" id="event-end-date" required oninput="calculateRealtimeStats()" class="w-full bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-850 focus:border-theme-500 rounded-xl px-3 py-2 text-xs outline-none text-slate-800 dark:text-slate-100">
             </div>
           </div>
 
@@ -293,11 +313,11 @@
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Hora Inicio</label>
-              <input type="time" id="event-start-time" required oninput="calculateRealtimeStats()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 focus:border-theme-500 rounded-xl px-3 py-2 text-xs outline-none text-slate-800 dark:text-slate-100">
+              <input type="time" id="event-start-time" required oninput="calculateRealtimeStats()" class="w-full bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-850 focus:border-theme-500 rounded-xl px-3 py-2 text-xs outline-none text-slate-800 dark:text-slate-100">
             </div>
             <div>
               <label class="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Hora Fin</label>
-              <input type="time" id="event-end-time" required oninput="calculateRealtimeStats()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 focus:border-theme-500 rounded-xl px-3 py-2 text-xs outline-none text-slate-800 dark:text-slate-100">
+              <input type="time" id="event-end-time" required oninput="calculateRealtimeStats()" class="w-full bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-850 focus:border-theme-500 rounded-xl px-3 py-2 text-xs outline-none text-slate-800 dark:text-slate-100">
             </div>
           </div>
 
@@ -307,13 +327,13 @@
               <label id="label-money" class="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Ganancia por Día</label>
               <div class="relative">
                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-black text-slate-400 currency-symbol">S/.</span>
-                <input type="number" id="event-earnings" min="0" step="any" oninput="calculateRealtimeStats()" placeholder="0.00" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 focus:border-theme-500 rounded-xl pl-8 pr-3 py-2 text-xs outline-none text-slate-800 dark:text-slate-100">
+                <input type="number" id="event-earnings" min="0" step="any" oninput="calculateRealtimeStats()" placeholder="0.00" class="w-full bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-850 focus:border-theme-500 rounded-xl pl-8 pr-3 py-2 text-xs outline-none text-slate-800 dark:text-slate-100">
               </div>
             </div>
             <div>
               <label class="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Categoría</label>
               <div class="flex gap-1">
-                <select id="event-category" required class="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 focus:border-theme-500 rounded-xl px-2 py-2 text-xs outline-none text-slate-800 dark:text-slate-100">
+                <select id="event-category" required class="flex-1 bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-850 focus:border-theme-500 rounded-xl px-2 py-2 text-xs outline-none text-slate-800 dark:text-slate-100">
                   <!-- JS populated -->
                 </select>
                 <button type="button" onclick="createNewCategory()" class="p-2 bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 rounded-xl">
@@ -337,7 +357,7 @@
           </div>
 
           <!-- Panel de Resultados en Tiempo Real -->
-          <div class="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 p-3.5 rounded-xl border border-slate-100 dark:border-slate-850 space-y-2 text-center">
+          <div class="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-955 dark:to-slate-900 p-3.5 rounded-xl border border-slate-100 dark:border-slate-850 space-y-2 text-center">
             <h4 class="text-[9px] font-black text-theme-500 uppercase tracking-widest flex items-center justify-center gap-1">
               <i data-lucide="calculator" class="w-3.5 h-3.5"></i> Resumen en Vivo
             </h4>
@@ -354,7 +374,7 @@
                 <span class="block text-slate-400 text-[8px] uppercase font-bold">Total Hrs</span>
                 <span id="calc-total-hours" class="font-black">-</span>
               </div>
-              <div id="calc-earnings-wrapper" class="bg-white dark:bg-slate-950 p-1.5 rounded-lg border border-slate-100 dark:border-slate-850">
+              <div id="calc-earnings-wrapper" class="bg-white dark:bg-slate-955 p-1.5 rounded-lg border border-slate-100 dark:border-slate-850">
                 <span id="calc-earnings-label" class="block text-[8px] font-bold text-emerald-500 uppercase">Total</span>
                 <span id="calc-total-earnings" class="font-black text-emerald-500">-</span>
               </div>
@@ -379,7 +399,7 @@
         <!-- Buscador Móvil Integrado -->
         <div class="relative w-full">
           <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
-          <input type="text" id="event-search" oninput="renderEventsList()" placeholder="Buscar en historial..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 rounded-xl pl-9 pr-4 py-2 text-xs outline-none transition-all text-slate-800 dark:text-slate-100">
+          <input type="text" id="event-search" oninput="renderEventsList()" placeholder="Buscar en historial..." class="w-full bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-850 rounded-xl pl-9 pr-4 py-2 text-xs outline-none transition-all text-slate-800 dark:text-slate-100">
         </div>
 
         <div class="flex items-center justify-between">
@@ -396,7 +416,7 @@
 
         <!-- Vista vacía -->
         <div id="no-events-view" class="p-8 text-center flex flex-col items-center justify-center space-y-2 hidden">
-          <div class="p-3 bg-slate-100 dark:bg-slate-950 rounded-full text-slate-400">
+          <div class="p-3 bg-slate-100 dark:bg-slate-955 rounded-full text-slate-400">
             <i data-lucide="inbox" class="w-6 h-6"></i>
           </div>
           <h4 class="font-bold text-slate-700 dark:text-slate-300 text-xs">Tu agenda está vacía</h4>
@@ -422,7 +442,7 @@
             <span class="text-[11px] font-bold text-slate-600 dark:text-slate-300">Color de Énfasis</span>
             <span id="active-theme-name" class="text-[9px] font-black uppercase text-theme-500">Esmeralda</span>
           </div>
-          <div class="flex items-center gap-3 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-850 justify-around">
+          <div class="flex items-center gap-3 bg-slate-50 dark:bg-slate-955 p-3 rounded-xl border border-slate-100 dark:border-slate-850 justify-around">
             <button onclick="setTheme('emerald')" class="w-6 h-6 rounded-full bg-emerald-500 border-2 border-transparent transition-transform active:scale-90" title="Esmeralda"></button>
             <button onclick="setTheme('ocean')" class="w-6 h-6 rounded-full bg-sky-500 border-2 border-transparent transition-transform active:scale-90" title="Océano"></button>
             <button onclick="setTheme('amethyst')" class="w-6 h-6 rounded-full bg-purple-500 border-2 border-transparent transition-transform active:scale-90" title="Amatista"></button>
@@ -432,7 +452,7 @@
         </div>
 
         <!-- Divisa (Monedas) -->
-        <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-850">
+        <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-955 p-3 rounded-xl border border-slate-100 dark:border-slate-850">
           <div class="space-y-0.5">
             <span class="text-[11px] font-bold text-slate-600 dark:text-slate-300 block">Moneda de Trabajo</span>
             <span class="text-[9px] text-slate-400 block">Símbolo actual de finanzas</span>
@@ -445,12 +465,12 @@
         </div>
 
         <!-- Modo Oscuro / Claro -->
-        <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-850">
+        <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-955 p-3 rounded-xl border border-slate-100 dark:border-slate-850">
           <div class="space-y-0.5">
             <span class="text-[11px] font-bold text-slate-600 dark:text-slate-300 block">Tema Oscuro</span>
             <span class="text-[9px] text-slate-400 block">Optimiza la visualización de noche</span>
           </div>
-          <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center">
+          <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 text-slate-600 dark:text-slate-400 flex items-center justify-center">
             <i data-lucide="sun" id="sun-icon" class="w-4 h-4 hidden dark:block text-amber-400"></i>
             <i data-lucide="moon" id="moon-icon" class="w-4 h-4 block dark:hidden text-slate-600"></i>
           </button>
@@ -462,19 +482,19 @@
           
           <div class="grid grid-cols-1 gap-2">
             <!-- Cargar Ejemplo -->
-            <button type="button" onclick="loadMockData()" class="w-full p-3 text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-50 hover:bg-slate-100 dark:bg-slate-950 dark:hover:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-xl flex items-center justify-between">
+            <button type="button" onclick="loadMockData()" class="w-full p-3 text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-50 hover:bg-slate-100 dark:bg-slate-955 dark:hover:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-xl flex items-center justify-between">
               <span class="flex items-center gap-2"><i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i> Cargar Datos de Ejemplo</span>
               <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
             </button>
             
             <!-- Exportar copia -->
-            <button type="button" onclick="exportData()" class="w-full p-3 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-slate-50 hover:bg-slate-100 dark:bg-slate-950 dark:hover:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-xl flex items-center justify-between">
+            <button type="button" onclick="exportData()" class="w-full p-3 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-slate-50 hover:bg-slate-100 dark:bg-slate-955 dark:hover:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-xl flex items-center justify-between">
               <span class="flex items-center gap-2"><i data-lucide="download" class="w-4 h-4"></i> Guardar Copia (.json)</span>
               <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
             </button>
 
             <!-- Importar copia -->
-            <button type="button" onclick="triggerImport()" class="w-full p-3 text-xs font-bold text-violet-600 dark:text-violet-400 bg-slate-50 hover:bg-slate-100 dark:bg-slate-950 dark:hover:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-xl flex items-center justify-between">
+            <button type="button" onclick="triggerImport()" class="w-full p-3 text-xs font-bold text-violet-600 dark:text-violet-400 bg-slate-50 hover:bg-slate-100 dark:bg-slate-955 dark:hover:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-xl flex items-center justify-between">
               <span class="flex items-center gap-2"><i data-lucide="upload" class="w-4 h-4"></i> Cargar Copia de Respaldo</span>
               <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
             </button>
@@ -521,6 +541,9 @@
     </button>
   </nav>
 
+  <!-- Inyección segura para Cordova nativo -->
+  <script src="cordova.js"></script>
+
   <!-- SCRIPT LOGIC DE LA APP -->
   <script>
     let events = [];
@@ -562,17 +585,42 @@
       }
     }
 
-    // Sincronizar el color de la barra del sistema del celular de manera homogénea
+    // Sincronizar el color de la barra del sistema del celular de manera homogénea (Web & Cordova)
     function updateThemeColorMeta() {
       const meta = document.getElementById('meta-theme-color');
       if (meta) {
-        // En modo oscuro usamos el color pizarra oscuro de fondo; en claro, el slate-50
-        meta.setAttribute('content', isDarkMode ? '#020617' : '#f8fafc');
+        const themeBg = isDarkMode ? '#020617' : '#f8fafc';
+        meta.setAttribute('content', themeBg);
+        
+        document.documentElement.style.backgroundColor = themeBg;
+        document.body.style.backgroundColor = themeBg;
+
+        // Soporte Dinámico para Plugins Nativos de Cordova si se compila con ellos
+        if (window.StatusBar) {
+          StatusBar.backgroundColorByHexString(themeBg);
+          if (isDarkMode) {
+            StatusBar.styleLightContent();
+          } else {
+            StatusBar.styleDefault();
+          }
+        }
+        if (window.NavigationBar) {
+          const navColor = isDarkMode ? '#0f172a' : '#ffffff';
+          NavigationBar.backgroundColorByHexString(navColor, !isDarkMode);
+        }
+      }
+    }
+
+    // Evento nativo de Cordova cargado con seguridad
+    document.addEventListener("deviceready", onDeviceReady, false);
+    function onDeviceReady() {
+      if (window.StatusBar) {
+        StatusBar.overlaysWebView(true); // Hace que la app se dibuje abajo de la barra de notificaciones
+        updateThemeColorMeta();
       }
     }
 
     function loadThemeAndState() {
-      // 1. CARGAR DATOS PRIMERO (Evita que se renderice vacío)
       const savedEvents = localStorage.getItem('apk-events');
       if (savedEvents) {
         events = JSON.parse(savedEvents);
@@ -602,7 +650,6 @@
       updateThemeIcons();
       updateThemeColorMeta();
 
-      // 2. CONFIGURAR TEMA AL FINAL (Esto llamará a renderAll() con los datos ya cargados)
       const savedTheme = localStorage.getItem('apk-theme');
       setTheme(savedTheme || 'emerald');
     }
@@ -617,7 +664,6 @@
       document.body.setAttribute('data-theme', theme);
       localStorage.setItem('apk-theme', theme);
 
-      // Sincronizar nombre en Ajustes
       const names = {
         'emerald': 'Esmeralda',
         'ocean': 'Océano',
@@ -628,7 +674,6 @@
       const textName = document.getElementById('active-theme-name');
       if (textName) textName.textContent = names[theme];
 
-      // Destacar botón activo de color en Ajustes
       document.querySelectorAll('[title]').forEach(btn => {
         if (btn.getAttribute('title').toLowerCase() === getColorTranslate(theme)) {
           btn.classList.add('scale-125', 'ring-2', 'ring-slate-400', 'border-white');
@@ -674,6 +719,7 @@
 
     function populateCategories() {
       const select = document.getElementById('event-category');
+      if (!select) return;
       select.innerHTML = '';
       categories.forEach(cat => {
         const opt = document.createElement('option');
@@ -732,6 +778,7 @@
 
     function renderCalendar() {
       const container = document.getElementById('calendar-days');
+      if (!container) return;
       container.innerHTML = '';
 
       const month = calendarDate.getMonth();
@@ -1042,7 +1089,6 @@
     }
 
     function loadMockData() {
-      // Cargando ejemplo completo con el caso del usuario (Ingreso de capacitación + Gasto en transporte)
       const mockEvents = [
         {
           id: 'mock-1',
@@ -1129,7 +1175,6 @@
       const balanceSubLabel = document.getElementById('stat-balance-sub-label');
 
       if (balanceCard) {
-        // Formateado limpio de moneda, eliminando la duplicación duplicada de image_2738f9.png
         const absBalance = Math.abs(balance).toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         const prefix = balance >= 0 ? '+' : '-';
         
@@ -1159,6 +1204,7 @@
       const emptyView = document.getElementById('no-events-view');
       const searchQuery = document.getElementById('event-search').value.toLowerCase();
 
+      if (!mobileList) return;
       mobileList.innerHTML = '';
 
       const filtered = events.filter(e => 
@@ -1189,21 +1235,21 @@
             <div>
               <h4 class="font-bold text-slate-900 dark:text-white text-xs leading-snug">${e.desc}</h4>
               <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                <span class="text-[9px] font-black px-1.5 py-0.5 bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 rounded-md shadow-xs border border-slate-100 dark:border-slate-800">${e.category}</span>
+                <span class="text-[9px] font-black px-1.5 py-0.5 bg-slate-50 dark:bg-slate-955 text-slate-500 dark:text-slate-400 rounded-md shadow-xs border border-slate-100 dark:border-slate-800">${e.category}</span>
                 <span class="text-[9px] text-slate-400 font-bold">${formatDateDisplay(e.startDate)} al ${formatDateDisplay(e.endDate)}</span>
               </div>
             </div>
             <div class="flex gap-1 shrink-0">
-              <button onclick="editEvent('${e.id}')" class="p-2 bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 rounded-xl border border-slate-100 dark:border-slate-800">
+              <button onclick="editEvent('${e.id}')" class="p-2 bg-slate-50 dark:bg-slate-955 text-slate-500 dark:text-slate-400 rounded-xl border border-slate-100 dark:border-slate-800">
                 <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
               </button>
-              <button onclick="deleteEvent('${e.id}')" class="p-2 bg-slate-50 dark:bg-slate-950 text-rose-500 rounded-xl border border-slate-100 dark:border-slate-800">
+              <button onclick="deleteEvent('${e.id}')" class="p-2 bg-slate-50 dark:bg-slate-955 text-rose-500 rounded-xl border border-slate-100 dark:border-slate-800">
                 <i data-lucide="trash" class="w-3.5 h-3.5"></i>
               </button>
             </div>
           </div>
 
-          <div class="pl-2 grid grid-cols-2 gap-2 text-[10px] bg-slate-50 dark:bg-slate-950 p-2.5 rounded-xl border border-slate-100 dark:border-slate-850">
+          <div class="pl-2 grid grid-cols-2 gap-2 text-[10px] bg-slate-50 dark:bg-slate-955 p-2.5 rounded-xl border border-slate-100 dark:border-slate-850">
             <div>
               <span class="block text-slate-400 font-bold text-[8px] uppercase">Días Ocupados</span>
               <span class="font-black text-slate-800 dark:text-slate-200">${e.days} d</span>
@@ -1287,31 +1333,34 @@
       const incomeTotal = events.filter(e => e.flow === 'income').reduce((sum, e) => sum + e.totalEarnings, 0);
       const expenseTotal = events.filter(e => e.flow === 'expense').reduce((sum, e) => sum + e.totalEarnings, 0);
 
-      const ctxBalance = document.getElementById('chart-balance').getContext('2d');
-      if (chartBalanceInstance) chartBalanceInstance.destroy();
+      const canvasBalance = document.getElementById('chart-balance');
+      if (canvasBalance) {
+        const ctxBalance = canvasBalance.getContext('2d');
+        if (chartBalanceInstance) chartBalanceInstance.destroy();
 
-      chartBalanceInstance = new Chart(ctxBalance, {
-        type: 'doughnut',
-        data: {
-          labels: ['Ingresos', 'Gastos'],
-          datasets: [{
-            data: [incomeTotal, expenseTotal],
-            backgroundColor: ['#10b981', '#f43f5e'],
-            borderWidth: isDark ? 2 : 1,
-            borderColor: isDark ? '#0f172a' : '#ffffff'
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'bottom',
-              labels: { color: textColor, font: { size: 9, family: 'Inter' } }
+        chartBalanceInstance = new Chart(ctxBalance, {
+          type: 'doughnut',
+          data: {
+            labels: ['Ingresos', 'Gastos'],
+            datasets: [{
+              data: [incomeTotal, expenseTotal],
+              backgroundColor: ['#10b981', '#f43f5e'],
+              borderWidth: isDark ? 2 : 1,
+              borderColor: isDark ? '#0f172a' : '#ffffff'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: { color: textColor, font: { size: 9, family: 'Inter' } }
+              }
             }
           }
-        }
-      });
+        });
+      }
 
       const categoryHours = {};
       categories.forEach(cat => categoryHours[cat] = 0);
@@ -1326,38 +1375,41 @@
       const activeCategories = Object.keys(categoryHours).filter(cat => categoryHours[cat] > 0);
       const activeHours = activeCategories.map(cat => categoryHours[cat]);
 
-      const ctxCategories = document.getElementById('chart-categories').getContext('2d');
-      if (chartCategoriesInstance) chartCategoriesInstance.destroy();
+      const canvasCategories = document.getElementById('chart-categories');
+      if (canvasCategories) {
+        const ctxCategories = canvasCategories.getContext('2d');
+        if (chartCategoriesInstance) chartCategoriesInstance.destroy();
 
-      chartCategoriesInstance = new Chart(ctxCategories, {
-        type: 'bar',
-        data: {
-          labels: activeCategories.length > 0 ? activeCategories : ['Sin Tiempos'],
-          datasets: [{
-            label: 'Horas',
-            data: activeHours.length > 0 ? activeHours : [0],
-            backgroundColor: '#6366f1',
-            borderRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false }
+        chartCategoriesInstance = new Chart(ctxCategories, {
+          type: 'bar',
+          data: {
+            labels: activeCategories.length > 0 ? activeCategories : ['Sin Tiempos'],
+            datasets: [{
+              label: 'Horas',
+              data: activeHours.length > 0 ? activeHours : [0],
+              backgroundColor: '#6366f1',
+              borderRadius: 6
+            }]
           },
-          scales: {
-            x: {
-              grid: { display: false },
-              ticks: { color: textColor, font: { size: 8 } }
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false }
             },
-            y: {
-              grid: { color: gridColor },
-              ticks: { color: textColor, font: { size: 8 } }
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: { color: textColor, font: { size: 8 } }
+              },
+              y: {
+                grid: { color: gridColor },
+                ticks: { color: textColor, font: { size: 8 } }
+              }
             }
           }
-        }
-      });
+        });
+      }
     }
 
     function getColorClasses(colorName) {
@@ -1399,6 +1451,7 @@
     function showToast(message) {
       const toast = document.getElementById('toast');
       const toastMessage = document.getElementById('toast-message');
+      if (!toast || !toastMessage) return;
       
       toastMessage.textContent = message;
       toast.classList.remove('translate-y-[-180%]');
