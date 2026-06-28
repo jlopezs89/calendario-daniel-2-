@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full select-none">
+<head>
+  <meta charset="UTF-8">
+  <!-- Meta especial para comportamiento de App Nativa en APK/WebIntoApp -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <title>Agenda Inteligente PRO</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js para análisis visual móvil -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Tailwind Config para variables móviles -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            theme: {
+              50: 'var(--color-theme-50)',
+              100: 'var(--color-theme-100)',
+              200: 'var(--color-theme-200)',
+              500: 'var(--color-theme-500)',
+              600: 'var(--color-theme-600)',
+              700: 'var(--color-theme-700)',
+              900: 'var(--color-theme-900)',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons para el Bottom Navigation y formularios -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    /* Temas Premium */
+    :root, [data-theme="emerald"] {
+      --color-theme-50: #ecfdf5;
+      --color-theme-100: #d1fae5;
+      --color-theme-200: #a7f3d0;
+      --color-theme-500: #10b981;
+      --color-theme-600: #059669;
+      --color-theme-700: #047857;
+      --color-theme-900: #064e3b;
+    }
+    [data-theme="ocean"] {
+      --color-theme-50: #f0f9ff;
+      --color-theme-100: #e0f2fe;
+      --color-theme-200: #bae6fd;
+      --color-theme-500: #0ea5e9;
+      --color-theme-600: #0284c7;
+      --color-theme-700: #0369a1;
+      --color-theme-900: #0c4a6e;
+    }
+    [data-theme="amethyst"] {
+      --color-theme-50: #faf5ff;
+      --color-theme-100: #f3e8ff;
+      --color-theme-200: #e9d5ff;
+      --color-theme-500: #a855f7;
+      --color-theme-600: #9333ea;
+      --color-theme-700: #7e22ce;
+      --color-theme-900: #581c87;
+    }
+    [data-theme="sunset"] {
+      --color-theme-50: #fff7ed;
+      --color-theme-100: #ffedd5;
+      --color-theme-200: #fed7aa;
+      --color-theme-500: #f97316;
+      --color-theme-600: #ea580c;
+      --color-theme-700: #c2410c;
+      --color-theme-900: #7c2d12;
+    }
+    [data-theme="charcoal"] {
+      --color-theme-50: #f8fafc;
+      --color-theme-100: #f1f5f9;
+      --color-theme-200: #e2e8f0;
+      --color-theme-500: #64748b;
+      --color-theme-600: #475569;
+      --color-theme-700: #334155;
+      --color-theme-900: #0f172a;
+    }
+
+    /* Estilos para que parezca una APP APK Nativa */
+    body {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior-y: contain; /* Desactiva el "tirar para recargar" típico de Chrome móvil */
+    }
+
+    /* Permitir selección de texto únicamente en campos de entrada */
+    input, textarea {
+      -webkit-user-select: text;
+      user-select: text;
+    }
+
+    /* Quitar scrollbar visual pero mantener funcionalidad */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 h-full flex flex-col transition-colors duration-300 overflow-hidden pb-16">
+
+  <!-- NOTIFICACIÓN FLOTANTE (ESTILO TOAST MÓVIL) -->
+  <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 transform translate-y-[-150%] transition-transform duration-300 bg-slate-900/95 dark:bg-white/95 text-white dark:text-slate-900 px-5 py-3 rounded-2xl shadow-xl flex items-center gap-2 max-w-[90%] w-max text-xs font-bold backdrop-blur-sm">
+    <i data-lucide="bell" class="w-4 h-4 text-theme-500"></i>
+    <span id="toast-message">¡Operación realizada con éxito!</span>
+  </div>
+
+  <!-- HEADER FIJO SÚPER COMPACTO PARA MÓVILES -->
+  <header class="border-b border-slate-150 dark:border-slate-800 bg-white dark:bg-slate-950 px-4 py-3 flex items-center justify-between sticky top-0 z-40 shrink-0">
+    <div class="flex items-center gap-2">
+      <div class="p-2 bg-theme-100 dark:bg-theme-900/40 rounded-xl text-theme-600 dark:text-theme-500">
+        <i data-lucide="sparkles" class="w-5 h-5"></i>
+      </div>
+      <div>
+        <h1 class="text-sm font-black tracking-tight dark:text-white flex items-center gap-1">
+          Agenda <span class="text-theme-600 dark:text-theme-500">PRO</span>
+        </h1>
+        <p class="text-[9px] text-slate-400 dark:text-slate-500 uppercase tracking-widest font-black">Mobile Edition</p>
+      </div>
+    </div>
+
+    <!-- Controles Compactos -->
+    <div class="flex items-center gap-2">
+      <!-- Selector de Monedas -->
+      <select id="currency-selector" onchange="changeCurrency(this.value)" class="bg-slate-100 dark:bg-slate-800 text-[10px] font-black px-2 py-1 rounded-lg focus:outline-none cursor-pointer">
+        <option value="PEN">S/. (PEN)</option>
+        <option value="USD">$ (USD)</option>
+        <option value="EUR">€ (EUR)</option>
+      </select>
+
+      <!-- Botón Modo Oscuro -->
+      <button onclick="toggleDarkMode()" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+        <i data-lucide="sun" id="sun-icon" class="w-4 h-4 hidden dark:block text-amber-400"></i>
+        <i data-lucide="moon" id="moon-icon" class="w-4 h-4 block dark:hidden text-slate-600"></i>
+      </button>
+
+      <!-- Botón Backup / Más opciones (Menú desplegable móvil) -->
+      <button onclick="toggleOptionsDropdown()" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 relative">
+        <i data-lucide="more-vertical" class="w-4 h-4"></i>
+        
+        <!-- Dropdown de APK Options -->
+        <div id="options-dropdown" class="hidden absolute right-0 mt-2 w-44 bg-white dark:bg-slate-950 rounded-xl shadow-2xl border border-slate-150 dark:border-slate-800 py-1.5 text-left z-50">
+          <button type="button" onclick="loadMockData()" class="w-full px-3 py-2 text-[11px] font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900 flex items-center gap-2">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i> Cargar Ejemplo
+          </button>
+          <hr class="border-slate-150 dark:border-slate-800 my-1">
+          <button type="button" onclick="exportData()" class="w-full px-3 py-2 text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-900 flex items-center gap-2">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i> Guardar Copia (.json)
+          </button>
+          <button type="button" onclick="triggerImport()" class="w-full px-3 py-2 text-[11px] font-bold text-violet-600 dark:text-violet-400 hover:bg-slate-50 dark:hover:bg-slate-900 flex items-center gap-2">
+            <i data-lucide="upload" class="w-3.5 h-3.5"></i> Cargar Copia
+          </button>
+          <input type="file" id="import-file" class="hidden" accept=".json" onchange="importData(event)">
+        </div>
+      </button>
+    </div>
+  </header>
+
+  <!-- SELECTOR DE PALETA DE COLOR EN LA PARTE SUPERIOR (FÁCIL ACCESO TÁCTIL) -->
+  <div class="px-4 py-2 bg-white dark:bg-slate-950 border-b border-slate-100 dark:border-slate-850 flex items-center justify-between shrink-0">
+    <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Color de la App</span>
+    <div class="flex items-center gap-2">
+      <button onclick="setTheme('emerald')" class="w-5 h-5 rounded-full bg-emerald-500 border border-white/50" title="Esmeralda"></button>
+      <button onclick="setTheme('ocean')" class="w-5 h-5 rounded-full bg-sky-500 border border-white/50" title="Océano"></button>
+      <button onclick="setTheme('amethyst')" class="w-5 h-5 rounded-full bg-purple-500 border border-white/50" title="Amatista"></button>
+      <button onclick="setTheme('sunset')" class="w-5 h-5 rounded-full bg-orange-500 border border-white/50" title="Atardecer"></button>
+      <button onclick="setTheme('charcoal')" class="w-5 h-5 rounded-full bg-slate-500 border border-white/50" title="Carbón"></button>
+    </div>
+  </div>
+
+  <!-- CONTENEDOR DE PANTALLAS (VISTAS) MÓVILES -->
+  <main class="flex-1 overflow-y-auto no-scrollbar relative">
+
+    <!-- PESTAÑA 1: INICIO (DASHBOARD & GRÁFICOS) -->
+    <div id="view-dashboard" class="view-panel p-4 space-y-4">
+      
+      <!-- Balance Vistoso (Móvil prioritario) -->
+      <div id="stat-balance-card" class="p-5 rounded-2xl flex items-center justify-between transition-all duration-300">
+        <div class="space-y-1">
+          <p id="stat-balance-sub-label" class="text-[10px] font-black uppercase tracking-wider">Mi Balance General</p>
+          <div class="flex items-baseline gap-1">
+            <span class="text-lg font-bold currency-symbol text-white">S/.</span>
+            <h3 id="stat-balance-val" class="text-3xl font-black text-white">0.00</h3>
+          </div>
+          <p id="stat-balance-phrase" class="text-[10px] opacity-90 font-medium">Cargando...</p>
+        </div>
+        <div id="stat-balance-icon-container" class="p-3.5 rounded-xl bg-white/20 text-white backdrop-blur-sm">
+          <i data-lucide="wallet" class="w-6 h-6"></i>
+        </div>
+      </div>
+
+      <!-- Cuadrícula de Sub-Métricas -->
+      <div class="grid grid-cols-2 gap-3">
+        <!-- Ingresos -->
+        <div class="bg-white dark:bg-slate-950 p-4 rounded-xl border border-slate-150 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+          <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest block">Ingresos Totales</span>
+          <div class="mt-2">
+            <span class="text-xs font-extrabold text-emerald-500 currency-symbol">S/.</span>
+            <span id="stat-income-count" class="text-lg font-black text-slate-900 dark:text-white">0.00</span>
+          </div>
+        </div>
+
+        <!-- Gastos -->
+        <div class="bg-white dark:bg-slate-950 p-4 rounded-xl border border-slate-150 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+          <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest block">Gastos / Consumo</span>
+          <div class="mt-2">
+            <span class="text-xs font-extrabold text-rose-500 currency-symbol">S/.</span>
+            <span id="stat-expenses-count" class="text-lg font-black text-slate-900 dark:text-white">0.00</span>
+          </div>
+        </div>
+
+        <!-- Días Ocupados -->
+        <div class="bg-white dark:bg-slate-950 p-4 rounded-xl border border-slate-150 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+          <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest block">Días Invertidos</span>
+          <div class="mt-2 flex items-baseline gap-1">
+            <span id="stat-days-count" class="text-lg font-black text-slate-900 dark:text-white">0</span>
+            <span class="text-[10px] text-slate-400 font-bold">días</span>
+          </div>
+        </div>
+
+        <!-- Horas Invertidas -->
+        <div class="bg-white dark:bg-slate-950 p-4 rounded-xl border border-slate-150 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+          <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest block">Horas Acumuladas</span>
+          <div class="mt-2 flex items-baseline gap-1">
+            <span id="stat-hours-count" class="text-lg font-black text-slate-900 dark:text-white">0.0</span>
+            <span class="text-[10px] text-slate-400 font-bold">horas</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección de Gráficos Analíticos -->
+      <div class="bg-white dark:bg-slate-950 p-4 rounded-2xl border border-slate-150 dark:border-slate-800 shadow-sm space-y-4">
+        <h3 class="text-xs font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 uppercase tracking-wider">
+          <i data-lucide="pie-chart" class="w-4 h-4 text-theme-500"></i> Análisis de tu Agenda
+        </h3>
+
+        <div class="space-y-4">
+          <!-- Gráfico Balance de Dinero -->
+          <div class="bg-slate-50 dark:bg-slate-900 p-3 rounded-xl">
+            <h4 class="text-[10px] font-black text-slate-400 uppercase text-center mb-2">Distribución Financiera</h4>
+            <div class="relative h-44 flex items-center justify-center">
+              <canvas id="chart-balance"></canvas>
+            </div>
+          </div>
+
+          <!-- Gráfico Distribución de Horas por Categoría -->
+          <div class="bg-slate-50 dark:bg-slate-900 p-3 rounded-xl">
+            <h4 class="text-[10px] font-black text-slate-400 uppercase text-center mb-2">Horas por Categoría</h4>
+            <div class="relative h-44 flex items-center justify-center">
+              <canvas id="chart-categories"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PESTAÑA 2: CALENDARIO -->
+    <div id="view-calendar" class="view-panel p-4 space-y-4 hidden">
+      <div class="bg-white dark:bg-slate-950 rounded-2xl border border-slate-150 dark:border-slate-800 shadow-sm p-4">
+        
+        <!-- Cabecera del Mes en Calendario -->
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+          <h2 class="font-bold text-xs uppercase tracking-wider text-slate-500">Mis Fechas</h2>
+          <div class="flex items-center gap-1">
+            <button onclick="prevMonth()" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+              <i data-lucide="chevron-left" class="w-4 h-4"></i>
+            </button>
+            <span id="calendar-month-year" class="text-xs font-extrabold uppercase text-slate-700 dark:text-slate-300 min-w-[90px] text-center">Junio 2026</span>
+            <button onclick="nextMonth()" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+              <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Matriz -->
+        <div class="mt-4">
+          <div class="grid grid-cols-7 text-center text-[10px] font-black text-slate-400 mb-2">
+            <div>DO</div><div>LU</div><div>MA</div><div>MI</div><div>JU</div><div>VI</div><div>SÁ</div>
+          </div>
+          <div id="calendar-days" class="grid grid-cols-7 gap-1">
+            <!-- Dinámico -->
+          </div>
+        </div>
+
+        <!-- Instrucciones en Pantalla -->
+        <div class="mt-4 p-3 bg-theme-50 dark:bg-theme-900/20 text-[10px] text-theme-700 dark:text-theme-400 rounded-xl flex items-center gap-2">
+          <i data-lucide="info" class="w-4 h-4 shrink-0"></i>
+          <span>Toca cualquier día libre del calendario para ir a programar una actividad en esa fecha de inmediato.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PESTAÑA 3: REGISTRAR (FORMULARIO CON CÁLCULOS EN TIEMPO REAL) -->
+    <div id="view-add" class="view-panel p-4 space-y-4 hidden">
+      <div class="bg-white dark:bg-slate-950 rounded-2xl border border-slate-150 dark:border-slate-800 shadow-sm p-4 space-y-4">
+        
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <h2 id="form-title" class="font-extrabold text-sm text-slate-900 dark:text-white">Nueva Entrada</h2>
+          <button id="btn-cancel-edit" onclick="resetForm()" class="hidden text-xs text-rose-500 font-bold">Cancelar Edición</button>
+        </div>
+
+        <form id="event-form" class="space-y-4" onsubmit="saveEvent(event)">
+          <input type="hidden" id="event-id">
+
+          <!-- Selector de Flujo: Actividad vs Consumo -->
+          <div>
+            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Tipo de Registro</label>
+            <div class="grid grid-cols-2 gap-2">
+              <label class="flex items-center justify-center gap-1.5 p-3 rounded-xl border border-slate-150 dark:border-slate-850 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900">
+                <input type="radio" name="event-flow" value="income" checked onchange="toggleFlowType('income')" class="text-theme-500 focus:ring-theme-500">
+                <span class="text-[11px] font-black text-emerald-600 dark:text-emerald-500">INGRESO</span>
+              </label>
+              <label class="flex items-center justify-center gap-1.5 p-3 rounded-xl border border-slate-150 dark:border-slate-850 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900">
+                <input type="radio" name="event-flow" value="expense" onchange="toggleFlowType('expense')" class="text-rose-500 focus:ring-rose-500">
+                <span class="text-[11px] font-black text-rose-600 dark:text-rose-400">GASTO (CONSUMO)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Descripción -->
+          <div>
+            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Descripción</label>
+            <input type="text" id="event-desc" required placeholder="Ej. Capacitación técnica, Pasajes en bus, Almuerzo..." class="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-850 focus:border-theme-500 focus:ring-2 focus:ring-theme-500/10 rounded-xl px-3.5 py-2.5 text-xs outline-none">
+          </div>
+
+          <!-- Fechas -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Desde</label>
+              <input type="date" id="event-start-date" required oninput="calculateRealtimeStats()" class="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-850 focus:border-theme-500 rounded-xl px-3 py-2 text-xs outline-none">
+            </div>
+            <div>
+              <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Hasta</label>
+              <input type="date" id="event-end-date" required oninput="calculateRealtimeStats()" class="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-850 focus:border-theme-500 rounded-xl px-3 py-2 text-xs outline-none">
+            </div>
+          </div>
+
+          <!-- Horas -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Hora Inicio</label>
+              <input type="time" id="event-start-time" required oninput="calculateRealtimeStats()" class="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-850 focus:border-theme-500 rounded-xl px-3 py-2 text-xs outline-none">
+            </div>
+            <div>
+              <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Hora Fin</label>
+              <input type="time" id="event-end-time" required oninput="calculateRealtimeStats()" class="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-850 focus:border-theme-500 rounded-xl px-3 py-2 text-xs outline-none">
+            </div>
+          </div>
+
+          <!-- Monto por Día & Categorías -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label id="label-money" class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Ganancia por Día</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-black text-slate-400 currency-symbol">S/.</span>
+                <input type="number" id="event-earnings" min="0" step="any" oninput="calculateRealtimeStats()" placeholder="0.00" class="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-850 focus:border-theme-500 rounded-xl pl-8 pr-3 py-2 text-xs outline-none">
+              </div>
+            </div>
+            <div>
+              <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Categoría</label>
+              <div class="flex gap-1">
+                <select id="event-category" required class="flex-1 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-850 focus:border-theme-500 rounded-xl px-2 py-2 text-xs outline-none">
+                  <!-- JS populated -->
+                </select>
+                <button type="button" onclick="createNewCategory()" class="p-2 bg-slate-100 dark:bg-slate-850 text-slate-600 dark:text-slate-300 rounded-xl">
+                  <i data-lucide="plus" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Color del Evento -->
+          <div>
+            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Color del Marcador</label>
+            <div class="flex items-center gap-3 bg-slate-50 dark:bg-slate-900/40 p-2 rounded-xl border border-slate-150 dark:border-slate-850 justify-around">
+              <input type="hidden" id="event-color" value="emerald">
+              <button type="button" onclick="selectEventColor('emerald', this)" class="color-dot w-6 h-6 rounded-full bg-emerald-500 border-2 border-white ring-2 ring-emerald-500/50 scale-110" title="Esmeralda"></button>
+              <button type="button" onclick="selectEventColor('sky', this)" class="color-dot w-6 h-6 rounded-full bg-sky-500 border-2 border-transparent" title="Celeste"></button>
+              <button type="button" onclick="selectEventColor('violet', this)" class="color-dot w-6 h-6 rounded-full bg-violet-500 border-2 border-transparent" title="Violeta"></button>
+              <button type="button" onclick="selectEventColor('rose', this)" class="color-dot w-6 h-6 rounded-full bg-rose-500 border-2 border-transparent" title="Rosa"></button>
+              <button type="button" onclick="selectEventColor('amber', this)" class="color-dot w-6 h-6 rounded-full bg-amber-500 border-2 border-transparent" title="Ámbar"></button>
+            </div>
+          </div>
+
+          <!-- Panel de Resultados en Tiempo Real -->
+          <div class="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950 p-3.5 rounded-xl border border-slate-150 dark:border-slate-800 space-y-2 text-center">
+            <h4 class="text-[9px] font-black text-theme-500 uppercase tracking-widest flex items-center justify-center gap-1">
+              <i data-lucide="calculator" class="w-3.5 h-3.5"></i> Resumen en Vivo
+            </h4>
+            <div class="grid grid-cols-4 gap-1 text-[10px]">
+              <div>
+                <span class="block text-slate-400 text-[8px] uppercase font-bold">Días</span>
+                <span id="calc-days" class="font-black">-</span>
+              </div>
+              <div>
+                <span class="block text-slate-400 text-[8px] uppercase font-bold">Hrs/Día</span>
+                <span id="calc-hours-per-day" class="font-black">-</span>
+              </div>
+              <div>
+                <span class="block text-slate-400 text-[8px] uppercase font-bold">Total Hrs</span>
+                <span id="calc-total-hours" class="font-black">-</span>
+              </div>
+              <div id="calc-earnings-wrapper" class="bg-white dark:bg-slate-900 p-1.5 rounded-lg border border-slate-150 dark:border-slate-850">
+                <span id="calc-earnings-label" class="block text-[8px] font-bold text-emerald-500 uppercase">Total</span>
+                <span id="calc-total-earnings" class="font-black text-emerald-500">-</span>
+              </div>
+            </div>
+            <div id="calc-error" class="hidden text-[9px] text-rose-500 font-bold bg-rose-50 dark:bg-rose-950/20 p-1 rounded-lg">
+              Verifica las horas y fechas ingresadas.
+            </div>
+          </div>
+
+          <button type="submit" class="w-full bg-theme-600 hover:bg-theme-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-theme-500/20 transition-all flex items-center justify-center gap-2 text-xs">
+            <i data-lucide="save" class="w-4 h-4"></i>
+            <span id="btn-submit-text">Guardar Actividad</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- PESTAÑA 4: HISTORIAL (REGISTRO Y LISTA DE OPERACIONES) -->
+    <div id="view-list" class="view-panel p-4 space-y-4 hidden">
+      <div class="bg-white dark:bg-slate-950 rounded-2xl border border-slate-150 dark:border-slate-800 shadow-sm p-4 space-y-3">
+        
+        <!-- Buscador Móvil Integrado -->
+        <div class="relative w-full">
+          <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+          <input type="text" id="event-search" oninput="renderEventsList()" placeholder="Buscar en historial..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-850 rounded-xl pl-9 pr-4 py-2 text-xs outline-none transition-all">
+        </div>
+
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Mis Registros</span>
+          <button onclick="clearAllEvents()" class="text-[10px] text-rose-500 font-bold hover:underline flex items-center gap-1">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Borrar Todo
+          </button>
+        </div>
+
+        <!-- Contenedor móvil de tarjetas -->
+        <div id="events-mobile-list" class="space-y-3">
+          <!-- Dinámico -->
+        </div>
+
+        <!-- Vista vacía -->
+        <div id="no-events-view" class="p-8 text-center flex flex-col items-center justify-center space-y-2 hidden">
+          <div class="p-3 bg-slate-100 dark:bg-slate-900 rounded-full text-slate-400">
+            <i data-lucide="inbox" class="w-6 h-6"></i>
+          </div>
+          <h4 class="font-bold text-slate-700 dark:text-slate-300 text-xs">Tu agenda está vacía</h4>
+          <p class="text-[10px] text-slate-400 max-w-xs mx-auto">Comienza agregando una nueva actividad o cargando el ejemplo del menú superior.</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- BARRA DE NAVEGACIÓN INFERIOR (ESTILO APP NATIVA MÓVIL) -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-950/95 border-t border-slate-150 dark:border-slate-850 py-2 flex justify-around items-center z-40 backdrop-blur-md pb-safe">
+    
+    <!-- Tab 1: Dashboard -->
+    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn flex flex-col items-center justify-center w-14 py-1 text-theme-500">
+      <i data-lucide="layout-dashboard" class="w-5 h-5 mb-0.5"></i>
+      <span class="text-[9px] font-bold">Inicio</span>
+    </button>
+
+    <!-- Tab 2: Calendario -->
+    <button onclick="switchTab('calendar')" id="nav-calendar" class="nav-btn flex flex-col items-center justify-center w-14 py-1 text-slate-400 dark:text-slate-500 hover:text-theme-500">
+      <i data-lucide="calendar" class="w-5 h-5 mb-0.5"></i>
+      <span class="text-[9px] font-bold">Calendario</span>
+    </button>
+
+    <!-- Tab 3: Registrar (Formulario) -->
+    <button onclick="switchTab('add')" id="nav-add" class="nav-btn flex flex-col items-center justify-center w-14 py-1 text-slate-400 dark:text-slate-500 hover:text-theme-500">
+      <i data-lucide="plus-circle" class="w-5 h-5 mb-0.5"></i>
+      <span class="text-[9px] font-bold">Añadir</span>
+    </button>
+
+    <!-- Tab 4: Historial -->
+    <button onclick="switchTab('list')" id="nav-list" class="nav-btn flex flex-col items-center justify-center w-14 py-1 text-slate-400 dark:text-slate-500 hover:text-theme-500">
+      <i data-lucide="history" class="w-5 h-5 mb-0.5"></i>
+      <span class="text-[9px] font-bold">Historial</span>
+    </button>
+  </nav>
+
+  <!-- SCRIPT LOGIC DE LA APP -->
+  <script>
+    // Variables globales
+    let events = [];
+    let categories = ["Capacitación", "Transporte", "Comida", "Ocio", "Trabajo", "Salud", "Otro"];
+    let currentTheme = 'emerald';
+    let isDarkMode = false;
+    let selectedCurrency = 'PEN';
+
+    const currencySymbols = {
+      'PEN': 'S/. ',
+      'USD': '$ ',
+      'EUR': '€ '
+    };
+
+    // Instancia de gráficos ChartJS
+    let chartBalanceInstance = null;
+    let chartCategoriesInstance = null;
+
+    // Calendario centrado por defecto en el mes del ejemplo (Junio 2026)
+    let calendarDate = new Date(2026, 5, 1);
+
+    // Sistema nativo de navegación de pestañas móviles
+    function switchTab(tabId) {
+      // Ocultar todas las pantallas
+      document.querySelectorAll('.view-panel').forEach(panel => {
+        panel.classList.add('hidden');
+      });
+      // Mostrar la pestaña seleccionada
+      document.getElementById(`view-${tabId}`).classList.remove('hidden');
+
+      // Desactivar todos los botones de la barra inferior
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('text-theme-500');
+        btn.classList.add('text-slate-400', 'dark:text-slate-500');
+      });
+      // Activar el botón de la pestaña correspondiente
+      const activeNav = document.getElementById(`nav-${tabId}`);
+      activeNav.classList.remove('text-slate-400', 'dark:text-slate-500');
+      activeNav.classList.add('text-theme-500');
+
+      // Cerrar opciones si estuvieran abiertas
+      document.getElementById('options-dropdown').classList.add('hidden');
+
+      // Redibujar gráficos si se va al Dashboard para evitar bugs de visualización en canvas ocultos
+      if (tabId === 'dashboard') {
+        setTimeout(renderCharts, 100);
+      }
+    }
+
+    // Toggle de desplegable de opciones extras en celulares
+    function toggleOptionsDropdown() {
+      const drop = document.getElementById('options-dropdown');
+      drop.classList.toggle('hidden');
+    }
+
+    // --- CARGAR ESTADO ---
+    function loadThemeAndState() {
+      const savedTheme = localStorage.getItem('apk-theme');
+      setTheme(savedTheme || 'emerald');
+
+      const savedDark = localStorage.getItem('apk-dark-mode');
+      isDarkMode = savedDark === 'true';
+      if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      updateThemeIcons();
+
+      const savedCurrency = localStorage.getItem('apk-currency');
+      if (savedCurrency) {
+        selectedCurrency = savedCurrency;
+        document.getElementById('currency-selector').value = selectedCurrency;
+      }
+
+      const savedCategories = localStorage.getItem('apk-categories');
+      if (savedCategories) {
+        categories = JSON.parse(savedCategories);
+      }
+
+      const savedEvents = localStorage.getItem('apk-events');
+      if (savedEvents) {
+        events = JSON.parse(savedEvents);
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem('apk-events', JSON.stringify(events));
+      localStorage.setItem('apk-categories', JSON.stringify(categories));
+    }
+
+    function setTheme(theme) {
+      currentTheme = theme;
+      document.body.setAttribute('data-theme', theme);
+      localStorage.setItem('apk-theme', theme);
+      renderAll();
+    }
+
+    function toggleDarkMode() {
+      isDarkMode = !isDarkMode;
+      if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      localStorage.setItem('apk-dark-mode', isDarkMode);
+      updateThemeIcons();
+      renderAll();
+    }
+
+    function updateThemeIcons() {
+      const sun = document.getElementById('sun-icon');
+      const moon = document.getElementById('moon-icon');
+      if (isDarkMode) {
+        sun.classList.remove('hidden');
+        moon.classList.add('hidden');
+      } else {
+        sun.classList.add('hidden');
+        moon.classList.remove('hidden');
+      }
+    }
+
+    function changeCurrency(curr) {
+      selectedCurrency = curr;
+      localStorage.setItem('apk-currency', selectedCurrency);
+      renderAll();
+      showToast(`Moneda cambiada a: ${curr}`);
+    }
+
+    // Llenar selector de categorías
+    function populateCategories() {
+      const select = document.getElementById('event-category');
+      select.innerHTML = '';
+      categories.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        select.appendChild(opt);
+      });
+    }
+
+    function createNewCategory() {
+      const newCat = prompt("Ingresa el nombre de la nueva categoría:");
+      if (newCat && newCat.trim() !== '') {
+        const cleaned = newCat.trim();
+        if (!categories.includes(cleaned)) {
+          categories.push(cleaned);
+          saveState();
+          populateCategories();
+          document.getElementById('event-category').value = cleaned;
+          showToast(`Categoría "${cleaned}" agregada.`);
+        } else {
+          showToast(`La categoría ya existe.`, 'warning');
+        }
+      }
+    }
+
+    // Cambiar tipo de flujo (Ingreso / Gasto)
+    function toggleFlowType(type) {
+      const labelMoney = document.getElementById('label-money');
+      const calcLabel = document.getElementById('calc-earnings-label');
+      const wrapper = document.getElementById('calc-earnings-wrapper');
+
+      if (type === 'income') {
+        labelMoney.textContent = "Ganancia por Día";
+        calcLabel.textContent = "Ganancia Total";
+        calcLabel.className = "block text-[8px] font-bold text-emerald-500 uppercase";
+        wrapper.className = "bg-white dark:bg-slate-900 p-1.5 rounded-lg border border-slate-150 dark:border-slate-850 ring-2 ring-emerald-500/20";
+        document.getElementById('calc-total-earnings').className = "font-black text-emerald-500";
+      } else {
+        labelMoney.textContent = "Gasto por Día";
+        calcLabel.textContent = "Gasto Total";
+        calcLabel.className = "block text-[8px] font-bold text-rose-500 uppercase";
+        wrapper.className = "bg-white dark:bg-slate-900 p-1.5 rounded-lg border border-slate-150 dark:border-slate-850 ring-2 ring-rose-500/20";
+        document.getElementById('calc-total-earnings').className = "font-black text-rose-500";
+      }
+      calculateRealtimeStats();
+    }
+
+    // Marcadores de color individuales
+    function selectEventColor(colorName, buttonElement) {
+      document.getElementById('event-color').value = colorName;
+      document.querySelectorAll('.color-dot').forEach(btn => {
+        btn.classList.remove('scale-110', 'ring-2', 'border-white');
+        btn.classList.add('hover:scale-105');
+      });
+      buttonElement.classList.remove('hover:scale-105');
+      buttonElement.classList.add('scale-110', 'ring-2', 'border-white');
+    }
+
+    // --- STREAMING_CHUNK:Enhancing calendar rendering for mobile screens... ---
+    // --- LÓGICA DEL CALENDARIO MENSUAL ---
+    function renderCalendar() {
+      const container = document.getElementById('calendar-days');
+      container.innerHTML = '';
+
+      const month = calendarDate.getMonth();
+      const year = calendarDate.getFullYear();
+
+      const monthsNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+      document.getElementById('calendar-month-year').textContent = `${monthsNames[month]} ${year}`;
+
+      const firstDayIndex = new Date(year, month, 1).getDay();
+      const lastDay = new Date(year, month + 1, 0).getDate();
+      const prevLastDay = new Date(year, month, 0).getDate();
+
+      // Rellenar días mes previo
+      for (let x = firstDayIndex; x > 0; x--) {
+        const div = document.createElement('div');
+        div.className = "h-10 flex items-center justify-center text-slate-300 dark:text-slate-700 text-[10px] select-none";
+        div.textContent = prevLastDay - x + 1;
+        container.appendChild(div);
+      }
+
+      // Rellenar días del mes actual
+      for (let i = 1; i <= lastDay; i++) {
+        const currentDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+        const dayEvents = getEventsForDate(currentDateStr);
+        const hasEvents = dayEvents.length > 0;
+
+        const dayBtn = document.createElement('button');
+        dayBtn.type = 'button';
+        dayBtn.onclick = () => selectCalendarDay(currentDateStr);
+
+        let baseClasses = "h-11 w-full rounded-xl flex flex-col items-center justify-center text-xs font-bold transition-all relative group ";
+        
+        if (hasEvents) {
+          const mainEvent = dayEvents[0];
+          baseClasses += `${getColorClasses(mainEvent.color)} text-white shadow-sm`;
+
+          // Tooltip táctil móvil
+          const tooltip = document.createElement('div');
+          tooltip.className = "absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:flex flex-col bg-slate-900 text-white text-[9px] rounded-lg p-2 shadow-xl z-50 w-44 pointer-events-none space-y-1";
+          let tooltipContent = `<strong class="text-theme-300 border-b border-slate-700 pb-1 mb-1 block">Agenda:</strong>`;
+          dayEvents.forEach(evt => {
+            const flowSymbol = evt.flow === 'income' ? '+' : '-';
+            tooltipContent += `
+              <div class="mt-0.5">
+                <p class="font-bold truncate text-white">${evt.desc}</p>
+                <p class="text-[8px] text-slate-300">${evt.startTime} a ${evt.endTime} | ${flowSymbol}${currencySymbols[selectedCurrency]}${evt.earnings.toFixed(1)}</p>
+              </div>
+            `;
+          });
+          tooltip.innerHTML = tooltipContent;
+          dayBtn.appendChild(tooltip);
+        } else {
+          baseClasses += "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-850";
+        }
+
+        // Hoy
+        const today = new Date();
+        if (today.getDate() === i && today.getMonth() === month && today.getFullYear() === year) {
+          baseClasses += " ring-2 ring-amber-500 ring-offset-2 dark:ring-offset-slate-950";
+        }
+
+        dayBtn.className = baseClasses;
+
+        const dayNum = document.createElement('span');
+        dayNum.textContent = i;
+        dayBtn.appendChild(dayNum);
+
+        // Indicador de flujos en la parte inferior del día
+        if (hasEvents) {
+          const incCount = dayEvents.filter(e => e.flow === 'income').length;
+          const expCount = dayEvents.filter(e => e.flow === 'expense').length;
+
+          const dotContainer = document.createElement('div');
+          dotContainer.className = "absolute bottom-1 flex gap-0.5 justify-center w-full";
+
+          if (incCount > 0) {
+            const dot = document.createElement('span');
+            dot.className = "w-1 h-1 rounded-full bg-emerald-200 border border-emerald-600";
+            dotContainer.appendChild(dot);
+          }
+          if (expCount > 0) {
+            const dot = document.createElement('span');
+            dot.className = "w-1 h-1 rounded-full bg-rose-200 border border-rose-600";
+            dotContainer.appendChild(dot);
+          }
+          dayBtn.appendChild(dotContainer);
+        }
+
+        container.appendChild(dayBtn);
+      }
+
+      // Rellenar días del mes siguiente
+      const totalCells = firstDayIndex + lastDay;
+      const nextDays = 42 - totalCells;
+      for (let j = 1; j <= (nextDays < 7 ? nextDays : nextDays - 7); j++) {
+        const div = document.createElement('div');
+        div.className = "h-10 flex items-center justify-center text-slate-300 dark:text-slate-700 text-[10px] select-none";
+        div.textContent = j;
+        container.appendChild(div);
+      }
+    }
+
+    function prevMonth() {
+      calendarDate.setMonth(calendarDate.getMonth() - 1);
+      renderCalendar();
+    }
+
+    function nextMonth() {
+      calendarDate.setMonth(calendarDate.getMonth() + 1);
+      renderCalendar();
+    }
+
+    function getEventsForDate(dateStr) {
+      const targetTime = new Date(dateStr + "T00:00:00").getTime();
+      return events.filter(e => {
+        const start = new Date(e.startDate + "T00:00:00").getTime();
+        const end = new Date(e.endDate + "T00:00:00").getTime();
+        return targetTime >= start && targetTime <= end;
+      });
+    }
+
+    function selectCalendarDay(dateStr) {
+      document.getElementById('event-start-date').value = dateStr;
+      document.getElementById('event-end-date').value = dateStr;
+      calculateRealtimeStats();
+      showToast(`Fecha seleccionada: ${formatDateDisplay(dateStr)}`);
+      switchTab('add'); // Redirige al tab del Formulario
+    }
+
+    // --- FORMULARIO EN TIEMPO REAL ---
+    function calculateRealtimeStats() {
+      const startDateVal = document.getElementById('event-start-date').value;
+      const endDateVal = document.getElementById('event-end-date').value;
+      const startTimeVal = document.getElementById('event-start-time').value;
+      const endTimeVal = document.getElementById('event-end-time').value;
+      const earningsVal = parseFloat(document.getElementById('event-earnings').value) || 0;
+      const flow = document.querySelector('input[name="event-flow"]:checked').value;
+
+      const calcDays = document.getElementById('calc-days');
+      const calcHoursPerDay = document.getElementById('calc-hours-per-day');
+      const calcTotalHours = document.getElementById('calc-total-hours');
+      const calcTotalEarnings = document.getElementById('calc-total-earnings');
+      const calcError = document.getElementById('calc-error');
+
+      calcError.classList.add('hidden');
+
+      if (!startDateVal || !endDateVal || !startTimeVal || !endTimeVal) {
+        calcDays.textContent = "-";
+        calcHoursPerDay.textContent = "-";
+        calcTotalHours.textContent = "-";
+        calcTotalEarnings.textContent = "-";
+        return;
+      }
+
+      const start = new Date(startDateVal + "T00:00:00");
+      const end = new Date(endDateVal + "T00:00:00");
+      const timeDiff = end.getTime() - start.getTime();
+      const diffDays = Math.floor(timeDiff / (1000 * 60 * 60 * 24)) + 1;
+
+      if (diffDays <= 0) {
+        calcError.classList.remove('hidden');
+        calcDays.textContent = "Error";
+        calcHoursPerDay.textContent = "-";
+        calcTotalHours.textContent = "-";
+        calcTotalEarnings.textContent = "-";
+        return;
+      }
+
+      const [startH, startM] = startTimeVal.split(':').map(Number);
+      const [endH, endM] = endTimeVal.split(':').map(Number);
+      let totalMinutesPerDay = (endH * 60 + endM) - (startH * 60 + startM);
+
+      if (totalMinutesPerDay <= 0) {
+        calcError.classList.remove('hidden');
+        calcDays.textContent = "-";
+        calcHoursPerDay.textContent = "Error";
+        calcTotalHours.textContent = "-";
+        calcTotalEarnings.textContent = "-";
+        return;
+      }
+
+      const hoursPerDay = totalMinutesPerDay / 60;
+      const totalHours = diffDays * hoursPerDay;
+      const totalEarnings = diffDays * earningsVal;
+
+      calcDays.textContent = `${diffDays} d`;
+      calcHoursPerDay.textContent = `${hoursPerDay.toFixed(1)} h`;
+      calcTotalHours.textContent = `${totalHours.toFixed(1)} h`;
+      
+      const symbol = currencySymbols[selectedCurrency];
+      if (flow === 'income') {
+        calcTotalEarnings.textContent = `+ ${symbol}${totalEarnings.toFixed(2)}`;
+      } else {
+        calcTotalEarnings.textContent = `- ${symbol}${totalEarnings.toFixed(2)}`;
+      }
+
+      return {
+        days: diffDays,
+        hoursPerDay: hoursPerDay,
+        totalHours: totalHours,
+        totalEarnings: totalEarnings
+      };
+    }
+
+    // --- GESTIÓN DE EVENTOS ---
+    function saveEvent(e) {
+      e.preventDefault();
+
+      const calcResults = calculateRealtimeStats();
+      if (!calcResults) {
+        showToast('Completa las fechas y horas lógicamente.', 'error');
+        return;
+      }
+
+      const id = document.getElementById('event-id').value;
+      const desc = document.getElementById('event-desc').value.trim();
+      const startDate = document.getElementById('event-start-date').value;
+      const endDate = document.getElementById('event-end-date').value;
+      const startTime = document.getElementById('event-start-time').value;
+      const endTime = document.getElementById('event-end-time').value;
+      const earnings = parseFloat(document.getElementById('event-earnings').value) || 0;
+      const flow = document.querySelector('input[name="event-flow"]:checked').value;
+      const category = document.getElementById('event-category').value;
+      const color = document.getElementById('event-color').value;
+
+      const eventData = {
+        id: id || 'evt-' + Date.now(),
+        desc,
+        startDate,
+        endDate,
+        startTime,
+        endTime,
+        earnings,
+        flow,
+        category,
+        color,
+        ...calcResults
+      };
+
+      if (id) {
+        const idx = events.findIndex(evt => evt.id === id);
+        if (idx !== -1) {
+          events[idx] = eventData;
+          showToast('Registro editado con éxito.');
+        }
+      } else {
+        events.push(eventData);
+        showToast('¡Registro guardado en la agenda!');
+      }
+
+      saveState();
+      resetForm();
+      renderAll();
+      switchTab('list'); // Redirige al Historial para ver el cambio
+    }
+
+    function editEvent(id) {
+      const e = events.find(evt => evt.id === id);
+      if (!e) return;
+
+      document.getElementById('event-id').value = e.id;
+      document.getElementById('event-desc').value = e.desc;
+      document.getElementById('event-start-date').value = e.startDate;
+      document.getElementById('event-end-date').value = e.endDate;
+      document.getElementById('event-start-time').value = e.startTime;
+      document.getElementById('event-end-time').value = e.endTime;
+      document.getElementById('event-earnings').value = e.earnings;
+      
+      const flowRadios = document.querySelectorAll('input[name="event-flow"]');
+      flowRadios.forEach(r => {
+        r.checked = r.value === e.flow;
+      });
+      toggleFlowType(e.flow);
+
+      document.getElementById('event-category').value = e.category;
+      document.getElementById('event-color').value = e.color;
+
+      const targetDot = Array.from(document.querySelectorAll('.color-dot')).find(dot => dot.getAttribute('title').toLowerCase() === getColorTranslate(e.color));
+      if (targetDot) selectEventColor(e.color, targetDot);
+
+      document.getElementById('form-title').textContent = "Editar Registro";
+      document.getElementById('btn-submit-text').textContent = "Actualizar Registro";
+      document.getElementById('btn-cancel-edit').classList.remove('hidden');
+
+      switchTab('add'); // Cambia a la pestaña de formulario
+      calculateRealtimeStats();
+    }
+
+    function deleteEvent(id) {
+      events = events.filter(evt => evt.id !== id);
+      saveState();
+      renderAll();
+      showToast('Registro eliminado.');
+    }
+
+    function resetForm() {
+      document.getElementById('event-form').reset();
+      document.getElementById('event-id').value = '';
+      document.getElementById('form-title').textContent = "Nueva Entrada";
+      document.getElementById('btn-submit-text').textContent = "Guardar Actividad";
+      document.getElementById('btn-cancel-edit').classList.add('hidden');
+      
+      const emeraldDot = document.querySelector('.color-dot[title="Esmeralda"]');
+      if (emeraldDot) selectEventColor('emerald', emeraldDot);
+
+      toggleFlowType('income');
+    }
+
+    function clearAllEvents() {
+      if (confirm('¿Eliminar todos los registros de tu agenda?')) {
+        events = [];
+        saveState();
+        renderAll();
+        showToast('Agenda borrada por completo.');
+      }
+    }
+
+    // --- CARGAR DATOS DE EJEMPLO ---
+    function loadMockData() {
+      const mockEvents = [
+        {
+          id: 'mock-1',
+          desc: 'Capacitación Técnica y Liderazgo',
+          startDate: '2026-06-27',
+          endDate: '2026-07-01',
+          startTime: '09:00',
+          endTime: '15:00',
+          earnings: 120.00,
+          flow: 'income',
+          category: 'Capacitación',
+          color: 'emerald',
+          days: 5,
+          hoursPerDay: 6,
+          totalHours: 30,
+          totalEarnings: 600.00
+        },
+        {
+          id: 'mock-2',
+          desc: 'Pasajes diarios a Capacitación',
+          startDate: '2026-06-27',
+          endDate: '2026-07-01',
+          startTime: '07:30',
+          endTime: '08:45',
+          earnings: 15.00,
+          flow: 'expense',
+          category: 'Transporte',
+          color: 'rose',
+          days: 5,
+          hoursPerDay: 1.25,
+          totalHours: 6.25,
+          totalEarnings: 75.00
+        },
+        {
+          id: 'mock-3',
+          desc: 'Almuerzos en restaurante',
+          startDate: '2026-06-28',
+          endDate: '2026-06-30',
+          startTime: '13:00',
+          endTime: '14:00',
+          earnings: 25.00,
+          flow: 'expense',
+          category: 'Comida',
+          color: 'amber',
+          days: 3,
+          hoursPerDay: 1.0,
+          totalHours: 3.0,
+          totalEarnings: 75.00
+        }
+      ];
+
+      events = mockEvents;
+      saveState();
+      calendarDate = new Date(2026, 5, 1); // Centrar en Junio 2026
+      renderAll();
+      switchTab('dashboard');
+      showToast('¡Datos de prueba cargados con tus ejemplos!');
+    }
+
+    // --- PROCESAMIENTO ANALÍTICO ---
+    function renderAll() {
+      document.querySelectorAll('.currency-symbol').forEach(el => {
+        el.textContent = currencySymbols[selectedCurrency];
+      });
+
+      renderCalendar();
+      calculateGlobalStats();
+      renderEventsList();
+      populateCategories();
+    }
+
+    function calculateGlobalStats() {
+      let totalHours = 0;
+      let totalIncome = 0;
+      let totalExpenses = 0;
+      let totalDaysCovered = new Set();
+
+      events.forEach(e => {
+        totalHours += e.totalHours;
+        
+        let dateCursor = new Date(e.startDate + "T00:00:00");
+        const dateEnd = new Date(e.endDate + "T00:00:00");
+        while(dateCursor <= dateEnd) {
+          totalDaysCovered.add(dateCursor.toDateString());
+          dateCursor.setDate(dateCursor.getDate() + 1);
+        }
+
+        if (e.flow === 'income') {
+          totalIncome += e.totalEarnings;
+        } else {
+          totalExpenses += e.totalEarnings;
+        }
+      });
+
+      const balance = totalIncome - totalExpenses;
+      const symbol = currencySymbols[selectedCurrency];
+
+      const balanceCard = document.getElementById('stat-balance-card');
+      const balanceVal = document.getElementById('stat-balance-val');
+      const balanceIconContainer = document.getElementById('stat-balance-icon-container');
+      const balanceSubLabel = document.getElementById('stat-balance-sub-label');
+      const balancePhrase = document.getElementById('stat-balance-phrase');
+
+      if (balanceCard) {
+        const absBalance = Math.abs(balance).toLocaleString('en-US', { minimumFractionDigits: 2 });
+        const prefix = balance >= 0 ? '+' : '-';
+        
+        balanceVal.textContent = `${prefix} ${symbol}${absBalance}`;
+
+        if (balance >= 0) {
+          balanceCard.className = "bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-600 text-white p-5 rounded-2xl shadow-lg shadow-emerald-500/20 flex items-center justify-between transition-all duration-300";
+          balanceSubLabel.className = "text-[10px] font-extrabold uppercase tracking-widest text-emerald-100";
+          balancePhrase.textContent = "¡Tus finanzas van de maravilla!";
+          balancePhrase.className = "text-[10px] text-emerald-500/10 bg-white/20 px-2 py-0.5 rounded-md mt-1 w-max font-bold";
+          balanceIconContainer.innerHTML = '<i data-lucide="wallet" class="w-5 h-5"></i>';
+        } else {
+          balanceCard.className = "bg-gradient-to-br from-rose-500 via-red-600 to-rose-600 text-white p-5 rounded-2xl shadow-lg shadow-rose-500/20 flex items-center justify-between transition-all duration-300";
+          balanceSubLabel.className = "text-[10px] font-extrabold uppercase tracking-widest text-rose-100";
+          balancePhrase.textContent = "Alerta de saldo negativo";
+          balancePhrase.className = "text-[10px] text-rose-500/10 bg-white/20 px-2 py-0.5 rounded-md mt-1 w-max font-bold";
+          balanceIconContainer.innerHTML = '<i data-lucide="trending-down" class="w-5 h-5"></i>';
+        }
+      }
+
+      document.getElementById('stat-days-count').textContent = totalDaysCovered.size;
+      document.getElementById('stat-hours-count').textContent = totalHours.toFixed(1);
+      document.getElementById('stat-income-count').textContent = totalIncome.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      document.getElementById('stat-expenses-count').textContent = totalExpenses.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      
+      lucide.createIcons();
+    }
+
+    // --- HISTORIAL DETALLADO (DISEÑO TARJETAS MÓVILES) ---
+    function renderEventsList() {
+      const mobileList = document.getElementById('events-mobile-list');
+      const emptyView = document.getElementById('no-events-view');
+      const searchQuery = document.getElementById('event-search').value.toLowerCase();
+
+      mobileList.innerHTML = '';
+
+      const filtered = events.filter(e => 
+        e.desc.toLowerCase().includes(searchQuery) || 
+        e.category.toLowerCase().includes(searchQuery)
+      );
+
+      if (filtered.length === 0) {
+        emptyView.classList.remove('hidden');
+        return;
+      }
+      emptyView.classList.add('hidden');
+
+      // Ordenar cronológicamente (recientes primero)
+      filtered.sort((a,b) => new Date(b.startDate) - new Date(a.startDate));
+
+      const symbol = currencySymbols[selectedCurrency];
+
+      filtered.forEach(e => {
+        const textFlowClass = e.flow === 'income' ? 'text-emerald-600 dark:text-emerald-500 font-bold' : 'text-rose-600 dark:text-rose-400 font-bold';
+        const bgDot = getColorPresetHex(e.color);
+
+        const card = document.createElement('div');
+        card.className = "bg-slate-50 dark:bg-slate-900/60 p-4 rounded-2xl border border-slate-150 dark:border-slate-850 space-y-3 relative overflow-hidden";
+        card.innerHTML = `
+          <!-- Indicador lateral de color -->
+          <div class="absolute left-0 top-0 bottom-0 w-1.5" style="background-color: ${bgDot}"></div>
+
+          <div class="pl-2 flex justify-between items-start gap-2">
+            <div>
+              <h4 class="font-bold text-slate-900 dark:text-white text-xs leading-snug">${e.desc}</h4>
+              <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                <span class="text-[9px] font-black px-1.5 py-0.5 bg-white dark:bg-slate-950 text-slate-500 rounded-md shadow-xs border border-slate-150 dark:border-slate-800">${e.category}</span>
+                <span class="text-[9px] text-slate-400 font-bold">${formatDateDisplay(e.startDate)} al ${formatDateDisplay(e.endDate)}</span>
+              </div>
+            </div>
+            <div class="flex gap-1">
+              <button onclick="editEvent('${e.id}')" class="p-2 bg-white dark:bg-slate-950 text-slate-500 dark:text-slate-400 rounded-xl shadow-xs border border-slate-150 dark:border-slate-800">
+                <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+              </button>
+              <button onclick="deleteEvent('${e.id}')" class="p-2 bg-white dark:bg-slate-950 text-rose-500 rounded-xl shadow-xs border border-slate-150 dark:border-slate-800">
+                <i data-lucide="trash" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="pl-2 grid grid-cols-2 gap-2 text-[10px] bg-white dark:bg-slate-950 p-2.5 rounded-xl border border-slate-150 dark:border-slate-800">
+            <div>
+              <span class="block text-slate-400 font-bold text-[8px] uppercase">Días Invertidos</span>
+              <span class="font-black">${e.days} d</span>
+            </div>
+            <div>
+              <span class="block text-slate-400 font-bold text-[8px] uppercase">Horas Diarias</span>
+              <span class="font-black">${e.hoursPerDay.toFixed(1)} h</span>
+            </div>
+            <div class="col-span-2 flex justify-between items-center border-t border-slate-100 dark:border-slate-800 pt-1.5 mt-1">
+              <span class="text-slate-400 font-bold text-[8px] uppercase">Tiempo Total:</span>
+              <span class="font-black text-theme-600 dark:text-theme-400">${e.totalHours.toFixed(1)} horas</span>
+            </div>
+          </div>
+
+          <div class="pl-2 flex justify-between items-center border-t border-slate-100 dark:border-slate-800 pt-2.5 text-[11px]">
+            <div>
+              <span class="block text-slate-400 font-bold text-[8px] uppercase">Flujo diario</span>
+              <span class="font-bold text-slate-600 dark:text-slate-300">${symbol}${e.earnings.toFixed(2)}</span>
+            </div>
+            <div class="text-right">
+              <span class="block text-slate-400 font-bold text-[8px] uppercase">Acumulado Neto</span>
+              <span class="${textFlowClass} text-xs font-black">
+                ${e.flow === 'income' ? '+' : '-'}${symbol}${e.totalEarnings.toFixed(2)}
+              </span>
+            </div>
+          </div>
+        `;
+        mobileList.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    // --- STREAMING_CHUNK:Adding CSV/JSON import-export functions... ---
+    // --- EXPORTAR / IMPORTAR PARA OTRA PC ---
+    function exportData() {
+      const dataStr = JSON.stringify({ events, categories });
+      const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+      const link = document.createElement('a');
+      link.setAttribute('href', dataUri);
+      link.setAttribute('download', 'agenda_inteligente_backup.json');
+      link.click();
+      showToast('Copia de respaldo guardada.');
+    }
+
+    function triggerImport() {
+      document.getElementById('import-file').click();
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (parsed.events && Array.isArray(parsed.events)) {
+            events = parsed.events;
+            if (parsed.categories && Array.isArray(parsed.categories)) {
+              categories = parsed.categories;
+            }
+            saveState();
+            populateCategories();
+            renderAll();
+            switchTab('dashboard');
+            showToast('¡Respaldo cargado con éxito!');
+          } else {
+            showToast('Archivo no válido.', 'error');
+          }
+        } catch (err) {
+          showToast('Error al importar archivo.', 'error');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // --- GRÁFICOS INTERACTIVOS (CHART.JS) ---
+    function renderCharts() {
+      const isDark = document.documentElement.classList.contains('dark');
+      const textColor = isDark ? '#94a3b8' : '#64748b';
+      const gridColor = isDark ? '#334155' : '#e2e8f0';
+
+      const incomeTotal = events.filter(e => e.flow === 'income').reduce((sum, e) => sum + e.totalEarnings, 0);
+      const expenseTotal = events.filter(e => e.flow === 'expense').reduce((sum, e) => sum + e.totalEarnings, 0);
+
+      const ctxBalance = document.getElementById('chart-balance').getContext('2d');
+      if (chartBalanceInstance) chartBalanceInstance.destroy();
+
+      chartBalanceInstance = new Chart(ctxBalance, {
+        type: 'doughnut',
+        data: {
+          labels: ['Ingresos', 'Gastos'],
+          datasets: [{
+            data: [incomeTotal, expenseTotal],
+            backgroundColor: ['#10b981', '#f43f5e'],
+            borderWidth: isDark ? 2 : 1,
+            borderColor: isDark ? '#0f172a' : '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { color: textColor, font: { size: 9, family: 'Inter' } }
+            }
+          }
+        }
+      });
+
+      const categoryHours = {};
+      categories.forEach(cat => categoryHours[cat] = 0);
+      events.forEach(e => {
+        if (categoryHours[e.category] !== undefined) {
+          categoryHours[e.category] += e.totalHours;
+        } else {
+          categoryHours[e.category] = e.totalHours;
+        }
+      });
+
+      const activeCategories = Object.keys(categoryHours).filter(cat => categoryHours[cat] > 0);
+      const activeHours = activeCategories.map(cat => categoryHours[cat]);
+
+      const ctxCategories = document.getElementById('chart-categories').getContext('2d');
+      if (chartCategoriesInstance) chartCategoriesInstance.destroy();
+
+      chartCategoriesInstance = new Chart(ctxCategories, {
+        type: 'bar',
+        data: {
+          labels: activeCategories.length > 0 ? activeCategories : ['Sin Tiempos'],
+          datasets: [{
+            label: 'Horas',
+            data: activeHours.length > 0 ? activeHours : [0],
+            backgroundColor: '#6366f1',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: textColor, font: { size: 8 } }
+            },
+            y: {
+              grid: { color: gridColor },
+              ticks: { color: textColor, font: { size: 8 } }
+            }
+          }
+        }
+      });
+    }
+
+    // --- AUXILIARES ---
+    function getColorClasses(colorName) {
+      switch (colorName) {
+        case 'sky': return 'bg-sky-500 shadow-sky-500/20';
+        case 'violet': return 'bg-violet-500 shadow-violet-500/20';
+        case 'rose': return 'bg-rose-500 shadow-rose-500/20';
+        case 'amber': return 'bg-amber-500 shadow-amber-500/20';
+        default: return 'bg-emerald-500 shadow-emerald-500/20';
+      }
+    }
+
+    function getColorPresetHex(colorName) {
+      switch (colorName) {
+        case 'sky': return '#0ea5e9';
+        case 'violet': return '#8b5cf6';
+        case 'rose': return '#f43f5e';
+        case 'amber': return '#f59e0b';
+        default: return '#10b981';
+      }
+    }
+
+    function getColorTranslate(colorName) {
+      switch (colorName) {
+        case 'sky': return 'celeste';
+        case 'violet': return 'violeta';
+        case 'rose': return 'rosa';
+        case 'amber': return 'ámbar';
+        default: return 'esmeralda';
+      }
+    }
+
+    function formatDateDisplay(dateStr) {
+      if (!dateStr) return '';
+      const [year, month, day] = dateStr.split('-');
+      return `${day}/${month}/${year}`;
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toast-message');
+      
+      toastMessage.textContent = message;
+      toast.classList.remove('translate-y-[-150%]');
+      toast.classList.add('translate-y-0');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0');
+        toast.classList.add('translate-y-[-150%]');
+      }, 3000);
+    }
+
+    // Ejecución Inicial
+    loadThemeAndState();
+  </script>
+</body>
+</html>
