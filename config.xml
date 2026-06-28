@@ -1,49 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.jlopez.calendario" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Agenda PRO</name>
-    <description>
-        Agenda inteligente de productividad, tiempos y balance financiero.
-    </description>
-    <author email="soporte@jlopez.com" href="http://jlopez.com">
-        J. Lopez Desarrollos
+    <name>Calendario Daniel</name>
+    <description>Mi aplicacion de Calendario</description>
+    <author email="tu-correo@ejemplo.com" href="http://cordova.io">
+        Jlopez
     </author>
     <content src="index.html" />
-    <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
-    <allow-intent href="tel:*" />
-    <allow-intent href="sms:*" />
-    <allow-intent href="mailto:*" />
-    <allow-intent href="geo:*" />
-
-    <!-- Plataforma Android -->
-    <platform name="android">
-        <allow-intent href="market:*" />
-        <preference name="KeepRunning" value="true" />
-    </platform>
-
-    <!-- Plataforma iOS -->
-    <platform name="ios">
-        <allow-intent href="itms:*" />
-        <allow-intent href="itms-apps:*" />
-    </platform>
-
-    <!-- Ajustes Críticos para Inmersión de Pantalla Completa (Edge-to-Edge) -->
-    <preference name="Fullscreen" value="false" />
-    <preference name="DisallowOverscroll" value="true" />
-    <preference name="BackgroundColor" value="#f8fafc" />
-    <preference name="Orientation" value="portrait" />
-
-    <!-- Ajustes de la Barra de Estado Superior (Elimina barra negra) -->
-    <preference name="StatusBarOverlaysWebView" value="true" />
-    <preference name="StatusBarBackgroundColor" value="#f8fafc" />
-    <preference name="StatusBarStyle" value="default" />
-
-    <!-- Ajustes de la Barra de Navegación Inferior (Elimina barra negra) -->
-    <preference name="NavigationBarBackgroundColor" value="#ffffff" />
-    <preference name="NavigationBarButtonColor" value="#10b981" />
-
-    <!-- Plugins de Cordova Requeridos (GitHub los descargará y compilará automáticamente) -->
-    <plugin name="cordova-plugin-statusbar" spec="^2.4.3" />
-    <plugin name="cordova-plugin-navigationbar-color" spec="^0.1.0" />
 </widget>
